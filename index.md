@@ -321,7 +321,7 @@ See and submit more on [Github](https://github.com/watou/vera-ecobee/issues?page
 
 ## History ##
 
-### 2016-04-13    v1.8
+### 2017-03-24    v1.8
 
 Fixes and enhancements:
 
