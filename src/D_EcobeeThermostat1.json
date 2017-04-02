@@ -24,7 +24,7 @@
             ]
         },
         {
-            "img": "http://watou.github.io/vera-ecobee/icons/thermostat.png",
+            "img": "http://anhman.neocities.org/fan.png",
             "conditions": [
                 {
                     "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
