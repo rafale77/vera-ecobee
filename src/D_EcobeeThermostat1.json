@@ -15,10 +15,10 @@
             "img": "http://watou.github.io/vera-ecobee/icons/thermostat.png",
             "conditions": [
                 {
-                    "service": "urn:upnp-org:serviceId:HVAC_UserOperatingMode1",
-                    "variable": "ModeStatus",
+                    "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
+                    "variable": "ModeState",
                     "operator": "==",
-                    "value": "Off",
+                    "value": "Idle",
                     "subcategory_num": 1
                 }
             ]
@@ -27,10 +27,10 @@
             "img": "http://watou.github.io/vera-ecobee/icons/thermostat.png",
             "conditions": [
                 {
-                    "service": "urn:upnp-org:serviceId:HVAC_UserOperatingMode1",
-                    "variable": "ModeStatus",
+                    "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
+                    "variable": "ModeState",
                     "operator": "==",
-                    "value": "AutoChangeOver",
+                    "value": "FanOnly",
                     "subcategory_num": 1
                 }
             ]
@@ -39,10 +39,10 @@
             "img": "http://anhman.neocities.org/Cool.png",
             "conditions": [
                 {
-                    "service": "urn:upnp-org:serviceId:HVAC_UserOperatingMode1",
-                    "variable": "ModeStatus",
+                    "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
+                    "variable": "ModeState",
                     "operator": "==",
-                    "value": "CoolOn",
+                    "value": "Cooling",
                     "subcategory_num": 1
                 }
             ]
@@ -51,10 +51,10 @@
             "img": "http://anhman.neocities.org/Heat.png",
             "conditions": [
                 {
-                    "service": "urn:upnp-org:serviceId:HVAC_UserOperatingMode1",
-                    "variable": "ModeStatus",
+                    "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
+                    "variable": "ModeState",
                     "operator": "==",
-                    "value": "HeatOn",
+                    "value": "Heating",
                     "subcategory_num": 1
                 }
             ]
@@ -84,6 +84,7 @@
             },
             "Position": "0",
             "TabType": "flash",
+            "top_navigation_tab": 1,
             "ControlGroup": [
                 {
                     "id": "1",
