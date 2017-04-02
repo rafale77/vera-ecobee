@@ -202,6 +202,30 @@
                         ]
                     },
                 },
+{
+                    "ControlGroup": "1",
+                    "ControlType": "button",
+                    "top": "3",
+                    "left": "0",
+                    "Label": {
+                        "lang_tag": "cmd_resume",
+                        "text": "Resume"
+                    },
+                    "Display": {
+                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
+                        "Variable": "currentEventType",
+                        "Value": "none",
+                        "Top": 100,
+                        "Left": 245,
+                        "Width": 75,
+                        "Height": 20
+                    },
+                    "Command": {
+                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
+                        "Action": "ResumeProgram",
+                        "Parameters": []
+                    },
+                },
                 {
                     "ControlGroup": "2",
                     "ControlType": "label",
