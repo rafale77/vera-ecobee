@@ -10,20 +10,20 @@
 		-- avoid a race condition when multiple instances of this module
 		-- start at the same time. (to prevent one instance from loading a 
 		-- partially decompressed file from another instance)
-    local decompressScript = [[
-decompress_lzo_file() {
-	SRC_FILE=/etc/cmh-ludl/$1.lzo
-	DEST_FILE=/etc/cmh-ludl/$1
-	if [ ! -e $DEST_FILE -o $SRC_FILE -nt $DEST_FILE ]
-	then
-		TEMP_FILE=$(mktemp)
-		pluto-lzo d $SRC_FILE $TEMP_FILE
-		mv $TEMP_FILE $DEST_FILE
-	fi
-}
-]]
+--    local decompressScript = [[
+--decompress_lzo_file() {
+--	SRC_FILE=/etc/cmh-ludl/$1.lzo
+--	DEST_FILE=/etc/cmh-ludl/$1
+--	if [ ! -e $DEST_FILE -o $SRC_FILE -nt $DEST_FILE ]
+--	then
+--		TEMP_FILE=$(mktemp)
+--		pluto-lzo d $SRC_FILE $TEMP_FILE
+--		mv $TEMP_FILE $DEST_FILE
+--	fi
+--}
+--]]
 
-		os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
+--		os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
 
     local MSG_CLASS = "ecobee"
     local DEBUG_MODE = true
@@ -83,7 +83,7 @@ decompress_lzo_file() {
     end
 
     -- constants
-    local PLUGIN_VERSION = "1.8"
+    local PLUGIN_VERSION = "2.0"
     local ECOBEE_SID = "urn:ecobee-com:serviceId:Ecobee1"
     local TEMP_SENSOR_SID = "urn:upnp-org:serviceId:TemperatureSensor1"
     local TEMP_SETPOINT_HEAT_SID = "urn:upnp-org:serviceId:TemperatureSetpoint1_Heat"
@@ -409,7 +409,7 @@ decompress_lzo_file() {
       -- Config variables
       session.poll   = tonumber(readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "poll", tostring(DEFAULT_POLL)))
       session.poll   = session.poll or DEFAULT_POLL
-      session.poll   = (session.poll &lt; MIN_POLL) and MIN_POLL or session.poll 
+      session.poll   = (session.poll < MIN_POLL) and MIN_POLL or session.poll 
 
       session.selectionType  = readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "selectionType",  "registered")
       session.selectionMatch = readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "selectionMatch", "")
@@ -554,7 +554,7 @@ decompress_lzo_file() {
         end
 
         -- if the sets of devices are out of sync...
-        if newDevices &gt; 0 or oldDevices &gt; 0 or syncDevices then
+        if newDevices > 0 or oldDevices > 0 or syncDevices then
           syncDevices = false
           -- do a full thermostat fetch and create child devices
           log("Synchronizing devices with ecobee.com...")
@@ -946,7 +946,7 @@ decompress_lzo_file() {
 
       -- set up the next poll
       local poll = tonumber(readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "poll", tostring(DEFAULT_POLL))) or DEFAULT_POLL
-      if (poll &lt; MIN_POLL) then poll = MIN_POLL end 
+      if (poll < MIN_POLL) then poll = MIN_POLL end 
       poll = tostring(poll)
       writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "poll", poll)
       debug("polling device " .. PARENT_DEVICE .. " again in " .. poll .. " seconds")
@@ -960,7 +960,7 @@ decompress_lzo_file() {
 
       TemperaturePrecision = tonumber(readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "TemperaturePrecision", "1"))
       TemperaturePrecision = TemperaturePrecision or 1
-      if TemperaturePrecision &lt; 1 or TemperaturePrecision &gt; 1000 then
+      if TemperaturePrecision < 1 or TemperaturePrecision > 1000 then
         TemperaturePrecision = 1
       end
 
