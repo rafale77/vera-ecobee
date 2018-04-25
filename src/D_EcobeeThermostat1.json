@@ -24,7 +24,7 @@
             ]
         },
         {
-            "img": "http://anhman.neocities.org/fan.png",
+            "img": "fan.png",
             "conditions": [
                 {
                     "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
@@ -36,7 +36,7 @@
             ]
         },
         {
-            "img": "http://anhman.neocities.org/Cool.png",
+            "img": "Cool.png",
             "conditions": [
                 {
                     "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
@@ -48,7 +48,7 @@
             ]
         },
         {
-            "img": "http://anhman.neocities.org/Heat.png",
+            "img": "Heat.png",
             "conditions": [
                 {
                     "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
