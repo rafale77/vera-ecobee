@@ -10,20 +10,6 @@
 		-- avoid a race condition when multiple instances of this module
 		-- start at the same time. (to prevent one instance from loading a 
 		-- partially decompressed file from another instance)
---    local decompressScript = [[
---decompress_lzo_file() {
---	SRC_FILE=/etc/cmh-ludl/$1.lzo
---	DEST_FILE=/etc/cmh-ludl/$1
---	if [ ! -e $DEST_FILE -o $SRC_FILE -nt $DEST_FILE ]
---	then
---		TEMP_FILE=$(mktemp)
---		pluto-lzo d $SRC_FILE $TEMP_FILE
---		mv $TEMP_FILE $DEST_FILE
---	fi
---}
---]]
-
---		os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
 
     local MSG_CLASS = "ecobee"
     local DEBUG_MODE = true
