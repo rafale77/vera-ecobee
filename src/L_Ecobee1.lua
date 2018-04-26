@@ -490,7 +490,7 @@
 
       if not session.auth_token then
         task("Not yet authorized. Press 'Get PIN' once; wait for PIN; enter at ecobee.com.")
-        writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "DisplayLabel", ""Not yet authorized. Press 'Get PIN' once; wait for PIN; enter at ecobee.com.")
+        writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "DisplayLabel", "Not yet authorized. Press 'Get PIN' once; wait for PIN; enter at ecobee.com.")
 
       else
         if not session.refresh_token then
