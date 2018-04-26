@@ -1,5 +1,5 @@
 {
-    "flashicon": "ecobee.png",
+    "flashicon": "",
     "default_icon": "ecobee.png",
     "imgIconBody": "",
     "imgIconDimmable": "",
@@ -113,6 +113,31 @@
                     }
                 },
                 {
+                    "ControlType": "label",
+                    "top": "0",
+                    "left": "0",
+                    "Label": {
+                        "lang_tag": "Client_ID",
+                        "text": "ClientID: "
+                    },
+                    "Display": {
+                        "Top": 100,
+                        "Left": 20,
+                        "Width": 75,
+                        "Height": 20
+                    },
+                {
+                    "ControlGroup": "2",
+                    "ControlType": "input",
+                    "ID": "Client_ID",
+                    "Display": {
+                        "Top": 100,
+                        "Left": 125,
+                        "Width": 150,
+                        "Height": 20
+                    }
+                },
+                {
                     "ControlGroup": "2",
                     "ControlType": "button",
                     "top": "0",
@@ -130,7 +155,9 @@
                     "Command": {
                         "Service": "urn:ecobee-com:serviceId:Ecobee1",
                         "Action": "GetPin",
-                        "Parameters": []
+                        "Parameters": [{
+				"Name": "ECO_ID",
+                                "ID": "ECO_ID"]
                     },
                     "ControlCode": "get_pin"
                 }

@@ -1,29 +1,3 @@
-    -- [The following is from Hugh Eaves' I_RTCOA_Wifi_ZoneThermostat1.xml.
-    -- He figured out how to work around problems in deploying compressed
-    -- modules. Please cite him as copyright owner under the GPL license terms.]
-		-- Using "require" to access compressed modules doesn't work if the 
-		-- module is declared without using the "module" function.
-		-- (see http://bugs.micasaverde.com/view.php?id=2276 )
-		--
-		-- We work around this with a shell script that executes pluto-lzo
-		-- to decompress the module. The temp file is used to
-		-- avoid a race condition when multiple instances of this module
-		-- start at the same time. (to prevent one instance from loading a 
-		-- partially decompressed file from another instance)
-    local decompressScript = [[
-decompress_lzo_file() {
-	SRC_FILE=/etc/cmh-ludl/$1.lzo
-	DEST_FILE=/etc/cmh-ludl/$1
-	if [ ! -e $DEST_FILE -o $SRC_FILE -nt $DEST_FILE ]
-	then
-		TEMP_FILE=$(mktemp)
-		pluto-lzo d $SRC_FILE $TEMP_FILE
-		mv $TEMP_FILE $DEST_FILE
-	fi
-}
-]]
-os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
-
     local MSG_CLASS = "ecobee"
     local DEBUG_MODE = true
     local taskHandle = -1
@@ -31,6 +5,7 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
     local TASK_ERROR_PERM = -2
     local TASK_SUCCESS = 4
     local TASK_BUSY = 1
+    local Client_ID = ""
 
     -- utility functions
 
@@ -455,7 +430,7 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
     end
     
     local function getTokens(session)
-      local access_token, token_type, refresh_token, scope = ecobee.getTokens(session)
+      local access_token, token_type, refresh_token, scope = ecobee.getTokens(session, Client_ID)
       saveSession(session)
       return access_token, token_type, refresh_token, scope
     end
@@ -503,7 +478,7 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
 
       if not session.auth_token then
         task("Not yet authorized. Press 'Get PIN' once; wait for PIN; enter at ecobee.com.")
-        writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "DisplayLabel", "Not yet authorized. Press 'Get PIN' once; wait for PIN; enter at ecobee.com.")
+--        writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "DisplayLabel", ""Not yet authorized. Press 'Get PIN' once; wait for PIN; enter at ecobee.com.")
 
       else
         if not session.refresh_token then
@@ -805,9 +780,7 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
       end -- session state
     end -- getStatus()
 
-    --[[
-    Functions that change thermostat state
-    ]]--
+    -- Functions that Change Thermostat State
 
     local function setHold(session, selection, lul_device, func)
       debug("in setHold()")
