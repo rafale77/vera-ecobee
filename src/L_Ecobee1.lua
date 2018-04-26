@@ -397,20 +397,20 @@
       session.poll   = session.poll or DEFAULT_POLL
       session.poll   = (session.poll < MIN_POLL) and MIN_POLL or session.poll 
 
-      session.selectionType  = readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "selectionType",  "registered")
+      session.selectionType  = readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "selectionType", "registered")
       session.selectionMatch = readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "selectionMatch", "")
-      session.scope          = readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "scope",          "smartWrite")
+      session.scope = readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "scope", "smartWrite")
 
       -- Session variables
-      session.auth_token    = luup.variable_get(ECOBEE_SID, "auth_token",    PARENT_DEVICE)
+      session.auth_token = luup.variable_get(ECOBEE_SID, "auth_token", PARENT_DEVICE)
       if session.auth_token == "" then session.auth_token = nil end
 
       session.auth_token_failures = auth_token_failures
 
-      session.access_token  = luup.variable_get(ECOBEE_SID, "access_token",  PARENT_DEVICE)
+      session.access_token = luup.variable_get(ECOBEE_SID, "access_token", PARENT_DEVICE)
       if session.access_token == "" then session.access_token = nil end
 
-      session.token_type    = luup.variable_get(ECOBEE_SID, "token_type",    PARENT_DEVICE)
+      session.token_type = luup.variable_get(ECOBEE_SID, "token_type", PARENT_DEVICE)
       if session.token_type == "" then session.token_type = nil end
 
       session.refresh_token = luup.variable_get(ECOBEE_SID, "refresh_token", PARENT_DEVICE)
@@ -470,7 +470,6 @@
                                           or { selectionType = "thermostats", selectionMatch = getThermostatId(lul_device) }
     end
 
-
     local statusOutstanding = false
     local function getStatusSoon()
       if not statusOutstanding then
@@ -491,6 +490,7 @@
 
       if not session.auth_token then
         task("Not yet authorized. Press 'Get PIN' once; wait for PIN; enter at ecobee.com.")
+        writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "DisplayLabel", ""Not yet authorized. Press 'Get PIN' once; wait for PIN; enter at ecobee.com.")
 
       else
         if not session.refresh_token then
