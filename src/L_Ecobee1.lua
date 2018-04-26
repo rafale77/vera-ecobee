@@ -92,7 +92,7 @@
 
     local dkjson = require("L_ecobee_dkjson")
     local json = L_ecobee_dkjson
-    local ecobee = require("L_ecobee")
+--    local ecobee = require("L_ecobee")
 
     local veraTemperatureScale = "F"
 
