@@ -63,7 +63,7 @@
                     "id": "1",
                     "isSingle": "1",
                     "scenegroup": "1"
-                },
+                }
             ],
             "SceneGroup": [
                 {
@@ -372,6 +372,15 @@
                     "variable": "currentClimateRef",
                     "value": "smart1"
                 }
+            },
+		"cmd_5":{
+			"label": "RESUME",
+                "serviceId": "urn:ecobee-com:serviceId:Ecobee1",
+                "action": "ResumeProgram",
+                "arguments": {},
+                "display": {
+                    "service": "urn:ecobee-com:serviceId:Ecobee1"
+                }
             }
         }
     },
@@ -420,8 +429,8 @@
 			{
 			    "Resume": "resume",
 			    "HumanFriendlyText":{
-				"lang_tag": "htt_device_resume"
-				"text": "Schedule Resumed"
+				"lang_tag": "hft_device_resume",
+				"text": "Schedule resumed"
 			    }
 			}
                     ],
