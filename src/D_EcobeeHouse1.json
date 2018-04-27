@@ -61,14 +61,9 @@
 	    "ControlGroup": [
                 {
                     "id": "1",
-                    "isSingle": "0",
+                    "isSingle": "1",
                     "scenegroup": "1"
                 },
-                {
-                    "id": "2",
-                    "type": "info",
-                    "scenegroup": "2"
-                }
             ],
             "SceneGroup": [
                 {
@@ -421,7 +416,14 @@
                                 "lang_tag": "hft_device_set_to_vacation",
                                 "text": "_DEVICE_NAME_ is set to vacation"
                             }
-                        }
+                        },
+			{
+			    "Resume": "resume",
+			    "HumanFriendlyText":{
+				"lang_tag": "htt_device_resume"
+				"text": "Schedule Resumed"
+			    }
+			}
                     ],
                     "name": "currentClimateRef",
                     "comparisson": "=",
