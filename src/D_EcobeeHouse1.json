@@ -145,7 +145,7 @@
                         ]
                     },
                 },
-{
+		{
                     "ControlGroup": "1",
                     "ControlType": "button",
                     "top": "2",
@@ -171,10 +171,10 @@
                                 "Name": "HoldClimateRef",
                                 "Value": "sleep"
                             }
-                        ]
-                    },
+                        		]
+                    	},
                 },
-{
+		{
                     "ControlGroup": "1",
                     "ControlType": "button",
                     "top": "3",
@@ -200,10 +200,10 @@
                                 "Name": "HoldClimateRef",
                                 "Value": "smart1"
                             }
-                        ]
+                        		]
                     },
                 },
-{
+		{
                     "ControlGroup": "1",
                     "ControlType": "button",
                     "top": "3",
@@ -291,8 +291,8 @@
                     },
                     "ControlCode": "climate"
                 }
-            ]
-        },
+            ] --"control"
+        }, --"first tab"
         {
             "Label": {
                 "lang_tag": "advanced",
