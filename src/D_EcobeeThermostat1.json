@@ -25,6 +25,7 @@
         },
         {
             "img": "fan.png",
+
             "conditions": [
                 {
                     "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
