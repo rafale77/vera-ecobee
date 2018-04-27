@@ -21,24 +21,24 @@
 - Create a new device in ALTUI using the D_Ecobee1.xml and I_Ecobee1.xml as your device files
 
 - Now you need to create an ecobee developer account:
- 1. Go to https://www.ecobee.com/developers/
- 2. Login with your ecobee credentials.
- 3. Accept the SDK agreement.
- 4. Fill in the fields.
- 5. Click save.
+  1. Go to https://www.ecobee.com/developers/
+  2. Login with your ecobee credentials.
+  3. Accept the SDK agreement.
+  4. Fill in the fields.
+  5. Click save.
 - Create an API Key:
- 1. Login to the regular consumer portal, and in the main options menu there will be a new option Developer.
- 2. Select the Developer option.
- 3. Select Create New.
- 4. Give your app a name (i.e Openluup)
- 5. For Authorization method select ecobee PIN.
- 6. You don’t need an Application Icon or Detailed Description.
- 7. Click Create.
- 8. Copy the API Key provided
+  1. Login to the regular consumer portal, and in the main options menu there will be a new option Developer.
+  2. Select the Developer option.
+  3. Select Create New.
+  4. Give your app a name (i.e Openluup)
+  5. For Authorization method select ecobee PIN.
+  6. You don’t need an Application Icon or Detailed Description.
+  7. Click Create.
+  8. Copy the API Key provided
 
 - Establish Link between API and Openluup
- 1. Paste the API key above into the API key field of the Ecobee device in Openluup and click "get pin"
- 2. Use the pin obtained to create a new 
+  1. Paste the API key above into the API key field of the Ecobee device in Openluup and click "get pin"
+  2. Use the pin obtained to create a new 
  
 
 Please see reference documentation <a href="http://watou.github.io/vera-ecobee/">here</a>.
