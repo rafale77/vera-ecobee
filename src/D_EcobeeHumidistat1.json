@@ -1,5 +1,5 @@
 {
-    "flashicon": "icons/Humidity_Sensor.swf",
+    "flashicon": "humidity_sensor_default.png",
     "default_icon": "humidity_sensor_default.png",
     "iconText": "1",
     "imgIconBody": "",
@@ -239,5 +239,6 @@
             ]
         }
     ],
-    "DeviceType": "urn:schemas-ecobee-com:device:EcobeeHumidistat:1"
+    "DeviceType": "urn:schemas-ecobee-com:device:EcobeeHumidistat:1",
+    "device_type": "urn:schemas-ecobee-com:device:EcobeeHumidistat:1"
 }

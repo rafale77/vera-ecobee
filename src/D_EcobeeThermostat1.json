@@ -15,22 +15,23 @@
             "img": "thermostat.png",
             "conditions": [
                 {
-                    "service": "urn:upnp-org:serviceId:HVAC_UserOperatingMode1",
-                    "variable": "ModeStatus",
+                    "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
+                    "variable": "ModeState",
                     "operator": "==",
-                    "value": "Off",
+                    "value": "Idle",
                     "subcategory_num": 1
                 }
             ]
         },
         {
-            "img": "thermostat.png",
+            "img": "fan.png",
+
             "conditions": [
                 {
-                    "service": "urn:upnp-org:serviceId:HVAC_UserOperatingMode1",
-                    "variable": "ModeStatus",
+                    "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
+                    "variable": "ModeState",
                     "operator": "==",
-                    "value": "AutoChangeOver",
+                    "value": "FanOnly",
                     "subcategory_num": 1
                 }
             ]
@@ -39,10 +40,10 @@
             "img": "Cool.png",
             "conditions": [
                 {
-                    "service": "urn:upnp-org:serviceId:HVAC_UserOperatingMode1",
-                    "variable": "ModeStatus",
+                    "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
+                    "variable": "ModeState",
                     "operator": "==",
-                    "value": "CoolOn",
+                    "value": "Cooling",
                     "subcategory_num": 1
                 }
             ]
@@ -51,10 +52,10 @@
             "img": "Heat.png",
             "conditions": [
                 {
-                    "service": "urn:upnp-org:serviceId:HVAC_UserOperatingMode1",
-                    "variable": "ModeStatus",
+                    "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
+                    "variable": "ModeState",
                     "operator": "==",
-                    "value": "HeatOn",
+                    "value": "Heating",
                     "subcategory_num": 1
                 }
             ]

@@ -1,6 +1,6 @@
 {
-    "flashicon": "http://watou.github.io/vera-ecobee/icons/ecobee.png",
-    "default_icon": "http://watou.github.io/vera-ecobee/icons/ecobee.png",
+    "flashicon": "ecobee.png",
+    "default_icon": "ecobee.png",
     "imgIconBody": "",
     "imgIconDimmable": "",
     "imgIconTurnable": "",
@@ -10,7 +10,7 @@
     "state_icons": [
 
  	{
-            "img": "http://watou.github.io/vera-ecobee/icons/ecobee_0.png",
+            "img": "ecobee_0.png",
             "conditions": [
                 {
                     "service": "urn:ecobee-com:serviceId:Ecobee1",
@@ -21,7 +21,7 @@
             ]
         },
         {
-            "img": "http://watou.github.io/vera-ecobee/icons/ecobee_100.png",
+            "img": "ecobee_100.png",
             "conditions": [
                 {
                     "service": "urn:ecobee-com:serviceId:Ecobee1",
@@ -113,6 +113,47 @@
                     }
                 },
                 {
+                    "ControlGroup": "1",
+                    "ControlType": "variable",
+                    "top": "1",
+                    "left": "1",
+                    "Display": {
+                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
+                        "Variable": "TSK",
+                        "Top": 80,
+                        "Left": 30,
+                        "Width": 200,
+                        "Height": 20
+                    }
+                },
+		{
+                    "ControlGroup": "2",
+                    "ControlType": "label",
+                    "top": "0",
+                    "left": "0",
+                    "Label": {
+                        "lang_tag": "Client_ID",
+                        "text": "API Key: "
+                    },
+                    "Display": {
+                        "Top": 100,
+                        "Left": 20,
+                        "Width": 75,
+                        "Height": 20
+                    }
+                },
+                {
+                    "ControlGroup": "2",
+                    "ControlType": "input",
+                    "ID": "Client_ID",
+                    "Display": {
+                        "Top": 100,
+                        "Left": 100,
+                        "Width": 150,
+                        "Height": 20
+                    }
+                },
+                {
                     "ControlGroup": "2",
                     "ControlType": "button",
                     "top": "0",
@@ -130,7 +171,9 @@
                     "Command": {
                         "Service": "urn:ecobee-com:serviceId:Ecobee1",
                         "Action": "GetPin",
-                        "Parameters": []
+                        "Parameters": [{
+				"Name": "Client_ID",
+                                "ID": "Client_ID"}]
                     },
                     "ControlCode": "get_pin"
                 }

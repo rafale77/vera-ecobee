@@ -1,6 +1,6 @@
 {
-    "flashicon": "http://watou.github.io/vera-ecobee/icons/house.png",
-    "default_icon": "http://watou.github.io/vera-ecobee/icons/house.png",
+    "flashicon": "house.png",
+    "default_icon": "house.png",
     "imgIconBody": "",
     "imgIconDimmable": "",
     "imgIconTurnable": "",
@@ -11,7 +11,7 @@
     "y": "4",
     "state_icons": [
         {
-            "img": "http://watou.github.io/vera-ecobee/icons/house_0.png",
+            "img": "house_0.png",
             "conditions": [
                 {
                     "service": "urn:upnp-org:serviceId:SwitchPower1",
@@ -22,7 +22,7 @@
             ]
         },
         {
-            "img": "http://watou.github.io/vera-ecobee/icons/house_100.png",
+            "img": "house_100.png",
             "conditions": [
                 {
                     "service": "urn:upnp-org:serviceId:SwitchPower1",
@@ -200,6 +200,30 @@
                                 "Value": "smart1"
                             }
                         ]
+                    },
+                },
+{
+                    "ControlGroup": "1",
+                    "ControlType": "button",
+                    "top": "3",
+                    "left": "0",
+                    "Label": {
+                        "lang_tag": "cmd_resume",
+                        "text": "Resume"
+                    },
+                    "Display": {
+                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
+                        "Variable": "currentEventType",
+                        "Value": "none",
+                        "Top": 100,
+                        "Left": 245,
+                        "Width": 75,
+                        "Height": 20
+                    },
+                    "Command": {
+                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
+                        "Action": "ResumeProgram",
+                        "Parameters": []
                     },
                 },
                 {
