@@ -29,12 +29,7 @@
     local PARENT_DEVICE
     local syncDevices = false
 
-    local dkjson = require("L_ecobee_dkjson")
     local json = require("dkjson")
---    local ecobee = require("L_ecobee")
-
-
-
     local https = require "ssl.https"
     local ltn12 = require "ltn12"
 
@@ -44,8 +39,6 @@
     local MAX_ID_LIST_LEN = 25
     local MAX_AUTH_TOKEN_FAILURES = 5
     local version = "2.0"
-
-
 
     local veraTemperatureScale = "C"
 
@@ -58,7 +51,6 @@
       veraTemperatureScale = ((code == 0) and (data ~= nil) and (data.temperature ~= nil)) and data.temperature or "C"
     end
 
-
     -- utility functions
 
     local function log(text, level)
@@ -70,7 +62,6 @@
         log("debug: " .. text, 35)
       end
     end
-
 
     local function readVariableOrInit(lul_device, serviceId, name, defaultValue) 
       local var = luup.variable_get(serviceId, name, lul_device)
@@ -940,16 +931,6 @@
       luup.call_timer("poll_ecobee", 1, poll, "", "")
     end
 
-
-
-
-
-
-
-
-
-
---"JxiTQz5yeee28nucIArL4RLN59Mgb7Uo"
 --[[
 URL encoding (from Roberto Ierusalimschy's book "Programming in Lua" 2nd ed.)
 ]]--
@@ -1482,9 +1463,6 @@ function climateObject(climate_data)
            coolTemp = climate_data.coolTemp,
            heatTemp = climate_data.heatTemp }
 end
-
-
-
 
 
     function init(lul_device)
