@@ -10,7 +10,7 @@ Release Note: V2.0
 
 Installation procedure:
 
-- Download the content of this repository
+# Download the content of this repository
 
 - Make sure your Openluup/lua library supports https. For this You can go to the Misc/OsCommand tab under Altui and install LUASEC using this command "luarocks install luasec"
 
