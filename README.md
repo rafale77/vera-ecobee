@@ -1,4 +1,4 @@
-# Ecobee Plugin adapted for Openluup based on Watou's free plugin.
+# Ecobee Plugin adapted for Openluup based on Watou's plugin.
 
 ## Release Note: V2.0
 
