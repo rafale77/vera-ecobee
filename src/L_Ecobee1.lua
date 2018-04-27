@@ -918,7 +918,7 @@
     function poll_ecobee()
       -- debug("in poll_ecobee()")
 
-      task("Clearing...", TASK_SUCCESS)
+      task("Connected", TASK_SUCCESS)
 
       getStatus()
 
@@ -1122,6 +1122,7 @@ local function refreshTokens(session)
     session.refresh_token = res.refresh_token
     session.scope         = res.scope
     return session.access_token, session.token_type, session.refresh_token, session.scope
+    task("Token refresh success!")
   end
 end
 
