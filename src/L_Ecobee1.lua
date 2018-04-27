@@ -1,29 +1,3 @@
-    -- [The following is from Hugh Eaves' I_RTCOA_Wifi_ZoneThermostat1.xml.
-    -- He figured out how to work around problems in deploying compressed
-    -- modules. Please cite him as copyright owner under the GPL license terms.]
-		-- Using "require" to access compressed modules doesn't work if the 
-		-- module is declared without using the "module" function.
-		-- (see http://bugs.micasaverde.com/view.php?id=2276 )
-		--
-		-- We work around this with a shell script that executes pluto-lzo
-		-- to decompress the module. The temp file is used to
-		-- avoid a race condition when multiple instances of this module
-		-- start at the same time. (to prevent one instance from loading a 
-		-- partially decompressed file from another instance)
-    local decompressScript = [[
-decompress_lzo_file() {
-	SRC_FILE=/etc/cmh-ludl/$1.lzo
-	DEST_FILE=/etc/cmh-ludl/$1
-	if [ ! -e $DEST_FILE -o $SRC_FILE -nt $DEST_FILE ]
-	then
-		TEMP_FILE=$(mktemp)
-		pluto-lzo d $SRC_FILE $TEMP_FILE
-		mv $TEMP_FILE $DEST_FILE
-	fi
-}
-]]
-os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
-
     local MSG_CLASS = "ecobee"
     local DEBUG_MODE = true
     local taskHandle = -1
@@ -31,6 +5,59 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
     local TASK_ERROR_PERM = -2
     local TASK_SUCCESS = 4
     local TASK_BUSY = 1
+    local Client_ID = ""
+
+    -- constants
+    local PLUGIN_VERSION = "2.0"
+    local ECOBEE_SID = "urn:ecobee-com:serviceId:Ecobee1"
+    local TEMP_SENSOR_SID = "urn:upnp-org:serviceId:TemperatureSensor1"
+    local TEMP_SETPOINT_HEAT_SID = "urn:upnp-org:serviceId:TemperatureSetpoint1_Heat"
+    local TEMP_SETPOINT_COOL_SID = "urn:upnp-org:serviceId:TemperatureSetpoint1_Cool"
+    local TEMP_SETPOINT_SID = "urn:upnp-org:serviceId:TemperatureSetpoint1"
+    local HUMIDITY_SENSOR_SID = "urn:micasaverde-com:serviceId:HumiditySensor1"
+    local HVAC_FAN_SID = "urn:upnp-org:serviceId:HVAC_FanOperatingMode1"
+    local HVAC_USER_SID = "urn:upnp-org:serviceId:HVAC_UserOperatingMode1"
+    local HVAC_STATE_SID = "urn:micasaverde-com:serviceId:HVAC_OperatingState1"
+    local HA_DEVICE_SID = "urn:micasaverde-com:serviceId:HaDevice1"
+    local SWITCH_POWER_SID = "urn:upnp-org:serviceId:SwitchPower1"
+    local MCV_ENERGY_METERING_SID = "urn:micasaverde-com:serviceId:EnergyMetering1"
+    local SECURITY_SENSOR_SID = "urn:micasaverde-com:serviceId:SecuritySensor1"
+    local DEFAULT_POLL = 180
+    local MIN_POLL = 180
+    local SOON = "5" -- seconds
+
+    local PARENT_DEVICE
+    local syncDevices = false
+
+    local dkjson = require("L_ecobee_dkjson")
+    local json = require("dkjson")
+--    local ecobee = require("L_ecobee")
+
+
+
+    local https = require "ssl.https"
+    local ltn12 = require "ltn12"
+
+    local API_ROOT = '/1/'
+    local COOL_OFF = 4000
+    local HEAT_OFF = -5002
+    local MAX_ID_LIST_LEN = 25
+    local MAX_AUTH_TOKEN_FAILURES = 5
+    local version = "2.0"
+
+
+
+    local veraTemperatureScale = "C"
+
+    local function getVeraTemperatureScale()
+      local code, data = luup.inet.wget("http://localhost:3480/data_request?id=lu_sdata")
+      
+      if (code == 0) then
+        data = json.decode(data)
+      end
+      veraTemperatureScale = ((code == 0) and (data ~= nil) and (data.temperature ~= nil)) and data.temperature or "C"
+    end
+
 
     -- utility functions
 
@@ -44,13 +71,6 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
       end
     end
 
-    local function task(text, mode)
-      local mode = mode or TASK_ERROR
-      if (mode ~= TASK_SUCCESS) then
-        log("task: " .. text, 50)
-      end
-      taskHandle = luup.task(text, (mode == TASK_ERROR_PERM) and TASK_ERROR or mode, MSG_CLASS, taskHandle)
-    end
 
     local function readVariableOrInit(lul_device, serviceId, name, defaultValue) 
       local var = luup.variable_get(serviceId, name, lul_device)
@@ -81,43 +101,15 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
       end
     end
 
-    -- constants
-    local PLUGIN_VERSION = "2.0"
-    local ECOBEE_SID = "urn:ecobee-com:serviceId:Ecobee1"
-    local TEMP_SENSOR_SID = "urn:upnp-org:serviceId:TemperatureSensor1"
-    local TEMP_SETPOINT_HEAT_SID = "urn:upnp-org:serviceId:TemperatureSetpoint1_Heat"
-    local TEMP_SETPOINT_COOL_SID = "urn:upnp-org:serviceId:TemperatureSetpoint1_Cool"
-    local TEMP_SETPOINT_SID = "urn:upnp-org:serviceId:TemperatureSetpoint1"
-    local HUMIDITY_SENSOR_SID = "urn:micasaverde-com:serviceId:HumiditySensor1"
-    local HVAC_FAN_SID = "urn:upnp-org:serviceId:HVAC_FanOperatingMode1"
-    local HVAC_USER_SID = "urn:upnp-org:serviceId:HVAC_UserOperatingMode1"
-    local HVAC_STATE_SID = "urn:micasaverde-com:serviceId:HVAC_OperatingState1"
-    local HA_DEVICE_SID = "urn:micasaverde-com:serviceId:HaDevice1"
-    local SWITCH_POWER_SID = "urn:upnp-org:serviceId:SwitchPower1"
-    local MCV_ENERGY_METERING_SID = "urn:micasaverde-com:serviceId:EnergyMetering1"
-    local SECURITY_SENSOR_SID = "urn:micasaverde-com:serviceId:SecuritySensor1"
-    local DEFAULT_POLL = 180
-    local MIN_POLL = 180
-    local SOON = "5" -- seconds
-
-    local PARENT_DEVICE
-    local syncDevices = false
-
-    local dkjson = require("L_ecobee_dkjson")
-    local json = L_ecobee_dkjson
-    local ecobee = require("L_ecobee")
-
-    local veraTemperatureScale = "F"
-
-    local function getVeraTemperatureScale()
-      local code, data = luup.inet.wget("http://localhost:3480/data_request?id=lu_sdata")
-      
-      if (code == 0) then
-        data = json.decode(data)
+    local function task(text, mode)
+      local mode = mode or TASK_ERROR
+      if (mode ~= TASK_SUCCESS) then
+        log("task: " .. text, 50)
       end
-
-      veraTemperatureScale = ((code == 0) and (data ~= nil) and (data.temperature ~= nil)) and data.temperature or "F"
+      taskHandle = luup.task(text, (mode == TASK_ERROR_PERM) and TASK_ERROR or mode, MSG_CLASS, taskHandle)
+      writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "TSK", text)
     end
+
 
     -- child device altids
     local THERM_ID_PREFIX = "therm."
@@ -315,10 +307,10 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
        ["Commands"] = function(t)
          local commands = { "hvac_off", "hvac_auto", "hvac_cool",  "hvac_heat",
                             "fan_auto", "fan_on",    "hvac_state", "resume_program" }
-         if t.runtime.desiredHeat ~= ecobee.HEAT_OFF then
+         if t.runtime.desiredHeat ~= HEAT_OFF then
            commands[#commands + 1] = "heating_setpoint"
          end
-         if t.runtime.desiredCool ~= ecobee.COOL_OFF then
+         if t.runtime.desiredCool ~= COOL_OFF then
            commands[#commands + 1] = "cooling_setpoint"
          end
          return table.concat(commands, ",")
@@ -449,31 +441,31 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
 
     -- wrapper ecobee API calls so saveSession is called after each API call
     local function getPin(session)
-      local pin = ecobee.getPin(session)
+      local pin = reqPin(session)
       saveSession(session)
       return pin
     end
     
     local function getTokens(session)
-      local access_token, token_type, refresh_token, scope = ecobee.getTokens(session)
+      local access_token, token_type, refresh_token, scope = reqTokens(session, Client_ID)
       saveSession(session)
       return access_token, token_type, refresh_token, scope
     end
 
     local function getThermostatSummary(session, thermostatSummaryOptions)
-      local revisions = ecobee.getThermostatSummary(session, thermostatSummaryOptions)
+      local revisions = reqThermostatSummary(session, thermostatSummaryOptions)
       saveSession(session)
       return revisions
     end
 
     local function getThermostats(session, thermostatsOptions)
-      local thermostats = ecobee.getThermostats(session, thermostatsOptions)
+      local thermostats = getThermostats(session, thermostatsOptions)
       saveSession(session)
       return thermostats
     end
 
     local function updateThermostats(session, thermostatsUpdateOptions)
-      local success = ecobee.updateThermostats(session, thermostatsUpdateOptions)
+      local success = requpdateThermostats(session, thermostatsUpdateOptions)
       saveSession(session)
       return success
     end
@@ -503,8 +495,6 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
 
       if not session.auth_token then
         task("Not yet authorized. Press 'Get PIN' once; wait for PIN; enter at ecobee.com.")
-        writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "DisplayLabel", "Not yet authorized. Press 'Get PIN' once; wait for PIN; enter at ecobee.com.")
-
       else
         if not session.refresh_token then
           debug("About to getTokens...")
@@ -517,7 +507,7 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
         end
 
         debug("Fetching revisions...")
-        local revisions = getThermostatSummary(session, ecobee.selectionObject(session.selectionType, session.selectionMatch, { equipmentStatus = true }))
+        local revisions = getThermostatSummary(session, selectionObject(session.selectionType, session.selectionMatch, { equipmentStatus = true }))
         if not revisions then
           log("Unable to getThermostatSummary; skipping status update.")
           return
@@ -559,7 +549,7 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
           log("Synchronizing devices with ecobee.com...")
 
           local includes = { settings=true, runtime=true, events=true, program=true, location=true, equipmentStatus=true, sensors=true }
-          local options = ecobee.selectionObject(session.selectionType, session.selectionMatch, includes)
+          local options = selectionObject(session.selectionType, session.selectionMatch, includes)
           local thermostats = getThermostats(session, options)
           if thermostats then
 
@@ -679,7 +669,7 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
           if #changed > 0 then
             -- just fetch the changed thermostats from ecobee.com
             local includes = { settings=true, runtime=true, events=true, program=true, equipmentStatus=true, sensors=true }
-            local thermostats = getThermostats(session, ecobee.selectionObject("thermostats", changed, includes))
+            local thermostats = getThermostats(session, selectionObject("thermostats", changed, includes))
             if thermostats then
               for id,t in pairs(thermostats) do
                 local r = revisions[id]
@@ -805,9 +795,7 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
       end -- session state
     end -- getStatus()
 
-    --[[
-    Functions that change thermostat state
-    ]]--
+    -- Functions that Change Thermostat State
 
     local function setHold(session, selection, lul_device, func)
       debug("in setHold()")
@@ -832,14 +820,14 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
           local heatSetpoint = luup.variable_get(TEMP_SETPOINT_HEAT_SID, "CurrentSetpoint", lul_device)
           func.params.heatHoldTemp = heatSetpoint and upnpToEcobee(TEMP_SETPOINT_HEAT_SID, "SetCurrentSetpoint",
                                                        "NewCurrentSetpoint", { NewCurrentSetpoint = heatSetpoint })
-                                                   or ecobee.HEAT_OFF
+                                                   or HEAT_OFF
         end
         
         if not func.params.coolHoldTemp then
           local coolSetpoint = luup.variable_get(TEMP_SETPOINT_COOL_SID, "CurrentSetpoint", lul_device)
           func.params.coolHoldTemp = coolSetpoint and upnpToEcobee(TEMP_SETPOINT_COOL_SID, "SetCurrentSetpoint",
                                                        "NewCurrentSetpoint", { NewCurrentSetpoint = coolSetpoint })
-                                                   or ecobee.COOL_OFF
+                                                   or COOL_OFF
         end
 
         if not func.params.fan then
@@ -848,13 +836,13 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
         end
       end
 
-      local success = updateThermostats(session, ecobee.thermostatsUpdateOptions(selection, { func }))
+      local success = updateThermostats(session, thermostatsUpdateOptions(selection, { func }))
       if success then getStatusSoon() end
       return success
     end
 
     local function setClimateHold(session, selection, lul_device, holdClimateRef)
-      local func = ecobee.setHoldFunction()
+      local func = setHoldFunction()
       func.params.holdClimateRef = holdClimateRef
       return setHold(session, selection, lul_device, func)
     end
@@ -865,12 +853,12 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
 
       local heatSetpoint = luup.variable_get(TEMP_SETPOINT_HEAT_SID, "CurrentSetpoint", lul_device)
       heatSetpoint = tonumber(heatSetpoint)
-      local heatHoldTemp = (not heatSetpoint) and ecobee.HEAT_OFF or
+      local heatHoldTemp = (not heatSetpoint) and HEAT_OFF or
                              upnpToEcobee(TEMP_SETPOINT_HEAT_SID, "SetCurrentSetpoint",
                                           "NewCurrentSetpoint", { NewCurrentSetpoint = heatSetpoint })
       local coolSetpoint = luup.variable_get(TEMP_SETPOINT_COOL_SID, "CurrentSetpoint", lul_device)
       coolSetpoint = tonumber(coolSetpoint)
-      local coolHoldTemp = (not coolSetpoint) and ecobee.COOL_OFF or
+      local coolHoldTemp = (not coolSetpoint) and COOL_OFF or
                              upnpToEcobee(TEMP_SETPOINT_COOL_SID, "SetCurrentSetpoint",
                                           "NewCurrentSetpoint", { NewCurrentSetpoint = coolSetpoint })
       local quickSaveSetBack  = luup.variable_get(ECOBEE_SID, "quickSaveSetBack", lul_device)
@@ -878,19 +866,19 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
       local quickSaveSetForward = luup.variable_get(ECOBEE_SID, "quickSaveSetForward", lul_device)
       quickSaveSetForward = tonumber(quickSaveSetForward) or 40 -- TODO
 
-      local func = ecobee.setHoldFunction()
+      local func = setHoldFunction()
       func.params.coolRelativeTemp = quickSaveSetForward
       func.params.heatRelativeTemp = quickSaveSetBack
       func.params.isTemperatureRelative = false
-      func.params.coolHoldTemp = (coolHoldTemp == ecobee.COOL_OFF) and coolHoldTemp or coolHoldTemp + quickSaveSetForward
-      func.params.heatHoldTemp = (heatHoldTemp == ecobee.HEAT_OFF) and heatHoldTemp or heatHoldTemp - quickSaveSetBack
+      func.params.coolHoldTemp = (coolHoldTemp == COOL_OFF) and coolHoldTemp or coolHoldTemp + quickSaveSetForward
+      func.params.heatHoldTemp = (heatHoldTemp == HEAT_OFF) and heatHoldTemp or heatHoldTemp - quickSaveSetBack
       func.params.isTemperatureAbsolute = true
       return setHold(session, selection, lul_device, func)
     end
 
     -- "away" function for binary switch device against EMS thermostats
     local function setOccupied(session, selection, lul_device, occupied)
-      local success = updateThermostats(session, ecobee.thermostatsUpdateOptions(selection, { ecobee.setOccupiedFunction(occupied, "indefinite") }))
+      local success = updateThermostats(session, thermostatsUpdateOptions(selection, { setOccupiedFunction(occupied, "indefinite") }))
       if success then getStatusSoon() end
       return success
     end
@@ -900,9 +888,9 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
       calls = calls or 1
       local functions = {}
       for i = 1,calls do
-        functions[#functions + 1] = ecobee.resumeProgramFunction()
+        functions[#functions + 1] = resumeProgramFunction()
       end
-      local success = updateThermostats(session, ecobee.thermostatsUpdateOptions(selection, functions))
+      local success = updateThermostats(session, thermostatsUpdateOptions(selection, functions))
       if success then getStatusSoon() end
       return success
     end
@@ -951,6 +939,553 @@ os.execute(decompressScript .. "decompress_lzo_file L_ecobee_dkjson.lua")
       debug("polling device " .. PARENT_DEVICE .. " again in " .. poll .. " seconds")
       luup.call_timer("poll_ecobee", 1, poll, "", "")
     end
+
+
+
+
+
+
+
+
+
+
+--"JxiTQz5yeee28nucIArL4RLN59Mgb7Uo"
+--[[
+URL encoding (from Roberto Ierusalimschy's book "Programming in Lua" 2nd ed.)
+]]--
+local function escape(s)
+  s = string.gsub(s, "[&=+%%%c]", function(c) return string.format("%%%02X", string.byte(c)) end)
+  s = string.gsub(s, " ", "+")
+  return s
+end
+
+local function stringify(t)
+  local b = {}
+  for k,v in pairs(t) do
+    b[#b + 1] = (k .. "=" .. escape(v))
+  end
+  return table.concat(b, "&")
+end
+
+--[[
+
+All calls below accept as their first argument a 'session' table containing these possible values:
+
+* api_key
+* scope
+* auth_token
+* access_token
+* token_type
+* refresh_token
+* http_status
+* error
+* error_description
+
+]]--
+
+--[[
+Generic request code handles get and post requests
+Must specify options.url and dataString
+
+Returns the possibly JSON-parsed table or string (or nil)
+--]]
+local function makeRequest(session, options, dataString)
+  options.host = "api.ecobee.com"
+  options.port = "443"
+  local res = {}
+  options.sink = ltn12.sink.table(res)
+  options.method = options.method or "GET"
+  options.headers = options.headers or {}
+  options.headers["User-Agent"] = "ecobee-lua-api/" .. version
+  options.headers["Content-Type"] = options.headers["Content-Type"] or "application/json;charset=UTF-8"
+  options.protocol = "tlsv1"
+  local errmsg
+
+  if options.method == "POST" then
+    options.headers["Content-Length"] = string.len(dataString)
+    options.source = ltn12.source.string(dataString)
+  else
+    options.url = options.url .. "?" .. dataString
+  end
+
+  if session.log then
+    session.log:write(">>> ", os.date(), "\n")
+    for k,v in pairs(options.headers) do session.log:write(k, " ", v, "\n") end
+    session.log:write(os.date(), " >>> ", options.method, " ", options.url, "\n")
+    if options.method == "POST" then
+      session.log:write(dataString, "\n")
+    end
+  end
+
+  local one, code, headers, errmsg = https.request(options)
+
+  res = table.concat(res)
+
+  if session.log then
+    session.log:write("<<< ", tostring(code), " ", tostring(errmsg), "\n")
+    session.log:write(tostring(res), "\n")
+    session.log:flush()
+  end
+
+  if options.headers.Accept == 'application/json' then
+    local nc, parsed
+    parsed, nc, errmsg = json.decode(res)
+    if parsed then res = parsed end
+  end
+
+  -- extract the most specific error information and put it in the session
+  if code ~= 200 then
+    if type(res) == "table" then
+      if res.status and res.status.code then
+        session.error = tostring(res.status.code)
+        session.error_description = res.status.message
+      else
+        session.error = res.error
+        session.error_description = res.error_description or res.error_descripton
+      end
+    else
+      session.error = tostring(code)
+      session.error_description = errmsg
+    end
+  else
+    session.error = nil
+    session.error_description = nil
+    return res
+  end
+end
+
+--[[
+Get a new pin for an application.
+
+Expects these values on call:
+* session.scope
+* session.auth_token_failures = 0
+
+Returns ecobeePin and sets these values on success:
+* session.auth_token
+]]--
+function reqPin(session)
+  local options = { url = "/authorize", headers = { Accept = "application/json" } }
+  local data = { response_type = "ecobeePin", scope = session.scope, client_id = Client_ID }
+  task(Client_ID)
+  local res = makeRequest(session, options, stringify(data))
+        
+  if res and res.ecobeePin and res.code then
+    session.auth_token = res.code
+    session.auth_token_failures = 0
+    session.access_token = nil
+    session.token_type = nil
+    session.refresh_token = nil
+    return res.ecobeePin
+  end
+end
+
+--[[
+Use an auth_token to get a new set of tokens from the server.
+
+Expects these values on call:
+* session.auth_token
+
+Sets and returns these values on success:
+* session.access_token
+* session.token_type
+* session.refresh_token
+* session.scope
+]]--
+function reqTokens(session)
+  local options = { url = "/token", method = "POST",
+                    headers = { Accept = "application/json", ["Content-Type"] = "application/x-www-form-urlencoded" } }
+  local data = { grant_type = "ecobeePin", code = session.auth_token, client_id = Client_ID }
+  local res = makeRequest(session, options, stringify(data))
+  
+  if res and res.access_token and res.token_type and res.refresh_token and res.scope then
+    session.access_token  = res.access_token
+    session.token_type    = res.token_type
+    session.refresh_token = res.refresh_token
+    session.scope         = res.scope
+    return session.access_token, session.token_type, session.refresh_token, session.scope
+  end
+end
+
+--[[
+Use a refresh token to get a new set of tokens from the server.
+
+Expects these values on call:
+* session.refresh_token
+
+Sets and returns these values on success:
+* session.access_token
+* session.token_type
+* session.refresh_token
+* session.scope
+]]--
+local function refreshTokens(session)
+  local options = { url = "/token", method = "POST",
+                    headers = { Accept = "application/json", ["Content-Type"] = "application/x-www-form-urlencoded" } }
+  local data = { grant_type = "refresh_token", code = session.refresh_token, client_id = Client_ID }
+  local res = makeRequest(session, options, stringify(data))
+
+  -- if the API failed with an "invalid_client" or "invalid_grant" error after MAX_AUTH_TOKEN_FAILURES attempts, 
+  -- then we have a rubbish auth_token or refresh_token and must discard the auth_token and force the user to get a new PIN
+  if session.error == "invalid_client" or session.error == "invalid_grant" then
+    session.auth_token_failures = (type(session.auth_token_failures) == "number") and (session.auth_token_failures + 1) or 1
+    if session.auth_token_failures >= MAX_AUTH_TOKEN_FAILURES then
+      session.auth_token = nil
+      session.auth_token_failures = 0
+    end
+  end
+
+  if res and res.access_token and res.token_type and res.refresh_token and res.scope then
+    session.access_token  = res.access_token
+    session.token_type    = res.token_type
+    session.refresh_token = res.refresh_token
+    session.scope         = res.scope
+    return session.access_token, session.token_type, session.refresh_token, session.scope
+  end
+end
+
+local ID_PAGE_SIZE = 25
+
+--[[
+Get the summary for the thermostats associated with this account.
+All options are passed in the thermostatSummaryOptions table.
+
+Expects these values on call:
+* session.access_token
+* session.token_type
+(If it is to be retried if the access_token expired:)
+* session.refresh_token
+
+Returns these values on success:
+* revisions table
+]]--
+function reqThermostatSummary(session, thermostatSummaryOptions, revisions)
+
+  thermostatSummaryOptions = thermostatSummaryOptions or selectionObject("registered", "")
+
+  if type(thermostatSummaryOptions.selection.selectionMatch) == "table" then
+
+    -- chunk the thermostat IDs into batches of 25 by calling ourselves
+    -- recursively but passing stringified chunks of IDs
+
+    local ids = thermostatSummaryOptions.selection.selectionMatch
+    revisions = revisions or {}
+    for i=1,#ids,ID_PAGE_SIZE do
+      j = math.min(#ids, (i+ID_PAGE_SIZE)-1)
+      thermostatSummaryOptions.selection.selectionMatch = table.concat(ids, ",", i, j)
+      if not reqThermostatSummary(session, thermostatSummaryOptions, revisions) then
+        revisions = nil
+        break
+      end
+    end
+    thermostatSummaryOptions.selection.selectionMatch = ids
+    return revisions
+
+  else
+
+    local jsonOptions = json.encode(thermostatSummaryOptions)
+    local options = { url = API_ROOT .. "thermostatSummary", method = "GET",
+                      headers = { Accept = "application/json", Authorization = session.token_type .. ' ' .. session.access_token } }
+
+    local res = makeRequest(session, options, stringify{ json = jsonOptions, token = session.access_token })
+
+    -- try again if the access_token expired
+    if session.error == "14" and session.refresh_token and refreshTokens(session) then
+      options = { url = API_ROOT .. "thermostatSummary", method = "GET",
+                  headers = { Accept = "application/json", Authorization = session.token_type .. ' ' .. session.access_token } }
+      res = makeRequest(session, options, stringify{ json = jsonOptions, token = session.access_token })
+    end
+
+    if not session.error and res.revisionList then
+      -- replace colon-separated lists with table of tables to hide formatting from API user
+      revisions = revisions or {}
+      for i,v in ipairs(res.revisionList) do
+        local identifier,name,connected,thermostatRev,alertsRev,runtimeRev = string.match(v, "(.-):(.-):(.-):(.-):(.-):(.-)$")
+        revisions[identifier] = { name = name, connected = (connected == "true"),
+                                  thermostatRev = thermostatRev, alertsRev = alertsRev, runtimeRev = runtimeRev }
+      end
+      -- if user requested equipmentStatus in the summary, parse it and add a member to revisions table
+      if res.statusList then
+        for i,v in ipairs(res.statusList) do
+          local identifier,equipmentStatus = string.match(v, "(.-):(.-)$")
+          if revisions[identifier] then
+            revisions[identifier].equipmentStatus = equipmentStatus
+          end
+        end
+      end
+
+      return revisions
+    end
+
+  end
+end
+
+--[[
+Gets thermostats defined by the thermostatsOptions object.
+
+Expects these values on call:
+* session.access_token
+* session.token_type
+(If it is to be retried if the access_token expired:)
+* session.refresh_token
+
+Returns these values on success:
+* thermostats table
+]]--
+function getThermostats(session, thermostatsOptions, thermostats)
+
+  if type(thermostatsOptions.selection.selectionMatch) == "table" then
+
+    -- chunk the thermostat IDs into batches of 25 by calling ourselves
+    -- recursively but passing stringified chunks of IDs
+
+    local ids = thermostatsOptions.selection.selectionMatch
+    thermostats = thermostats or {}
+    for i=1,#ids,ID_PAGE_SIZE do
+      j = math.min(#ids, (i+ID_PAGE_SIZE)-1)
+      thermostatsOptions.selection.selectionMatch = table.concat(ids, ",", i, j)
+      if not getThermostats(session, thermostatsOptions, thermostats) then
+        thermostats = nil
+        break
+      end
+    end
+    thermostatsOptions.selection.selectionMatch = ids
+    return thermostats
+
+  else
+
+    local page = 0
+    local totalPages = 1
+
+    repeat
+      page = page + 1
+
+      if page > 1 then
+        thermostatsOptions.page = { page = page }
+      end
+
+      local jsonOptions = json.encode(thermostatsOptions)
+
+      local options = { url = API_ROOT .. 'thermostat', method = "GET",
+                        headers = { Accept = "application/json", Authorization = session.token_type .. ' ' .. session.access_token } }
+
+      local res = makeRequest(session, options, stringify{ json = jsonOptions, token = session.access_token })
+
+      -- try again if the access_token expired
+      if session.error == "14" and session.refresh_token and refreshTokens(session) then
+        options = { url = API_ROOT .. 'thermostat', method = "GET",
+                    headers = { Accept = "application/json", Authorization = session.token_type .. ' ' .. session.access_token } }
+        res = makeRequest(session, options, stringify{ json = jsonOptions, token = session.access_token })
+      end
+
+      if not session.error and res.thermostatList then
+        thermostats = thermostats or {}
+        for i,v in ipairs(res.thermostatList) do
+          thermostats[v.identifier] = v
+        end
+        if res.page and res.page.totalPages then
+          totalPages = res.page.totalPages
+        end
+      else
+        thermostats = nil
+        break
+      end
+    until page >= totalPages
+
+    thermostatsOptions.page = nil
+    return thermostats
+
+  end
+end
+
+--[[
+Update thermostats based on the thermostatsUpdateOptions object
+Many common update actions have an associated function which are passed in an array
+so that multiple updates can be completed at one time. 
+Updates are completed in the order they appear in the functions array.
+
+Expects these values on call:
+* session.access_token
+* session.token_type
+(If it is to be retried if the access_token expired:)
+* session.refresh_token
+
+Returns these values on success:
+* true if no error
+]]--
+function requpdateThermostats(session, thermostatsUpdateOptions)
+
+  local options = { url = API_ROOT .. "thermostat?format=json",
+                    method = "POST",
+                    headers = { Accept = "application/json",
+                                Authorization = session.token_type .. " " .. session.access_token,
+                                ["Content-Type"] = "application/json" } }
+
+  local body = json.encode(thermostatsUpdateOptions)
+  local res = makeRequest(session, options, body)
+  
+  -- try again if the access_token expired
+  if session.error == "14" and session.refresh_token and refreshTokens(session) then
+    options.url = API_ROOT .. "thermostat?format=json"
+    options.headers.Authorization = session.token_type .. " " .. session.access_token
+    res = makeRequest(session, options, body)
+  end
+
+  return not session.error
+end
+
+-- convenience functions
+
+local THERM_OPTIONS = {
+  runtime = "includeRuntime",
+  extendedRuntime = "includeExtendedRuntime",
+  electricity = "includeElectricity",
+  settings = "includeSettings",
+  location = "includeLocation",
+  program = "includeProgram",
+  events = "includeEvents",
+  devices = "includeDevice",
+  technician = "includeTechnician",
+  utility = "includeUtility",
+  management = "includeManagement",
+  alerts = "includeAlerts",
+  weather = "includeWeather",
+  houseDetails = "includeHouseDetails",
+  oemCfg = "includeOemCfg",
+  equipmentStatus = "includeEquipmentStatus",
+  notificationSettings = "includeNotificationSettings",
+  privacy = "includePrivacy",
+  sensors = "includeSensors"
+}
+
+--[[
+Default options for getThermostats function when using includes
+
+selectionMatch can be a table of thermostat IDs, and it will be converted to
+a comma-separated list right before transmission
+]]--
+function selectionObject(selectionType, selectionMatch, includes)
+
+  local options = { selection = { selectionType=selectionType, selectionMatch=selectionMatch } }
+
+  if includes then
+    for k,v in pairs(includes) do
+      options.selection[ THERM_OPTIONS[k] ] = v
+    end
+  end
+
+  return options
+end
+
+-- get the hierarchy for EMS thermostats based on the node passed in
+-- default node is the root level. EMS Only.
+function managementSet(node)
+  return selectionObject("managementSet", node or "/")
+end
+
+--[[
+Default options for getThermostats function
+
+function thermostatsOptions(thermostat_ids,
+                            includeEvents,
+                            includeProgram,
+                            includeSettings,
+                            includeRuntime,
+                            includeAlerts,
+                            includeWeather)
+
+  if type(thermostat_ids) == "table" then
+    thermostat_ids = table.concat(thermostat_ids, ",")
+  end
+
+  includeEvents   = includeEvents or true
+  includeProgram  = includeProgram or true
+  includeSettings = includeSettings or true
+  includeRuntime  = includeRuntime or true
+  includeAlerts   = includeAlerts or false
+  includeWeather  = includeWeather or false
+
+  return { selection = { 
+    selectionType   = "thermostats",
+    selectionMatch  = thermostat_ids,
+    includeEvents   = includeEvents,
+    includeProgram  = includeProgram,
+    includeSettings = includeSettings,
+    includeRuntime  = includeRuntime,
+    includeAlerts   = includeAlerts,
+    includeWeather  = includeWeather } }
+end
+]]--
+
+--[[
+Update options that control how the thermostats update call behaves
+]]--
+function thermostatsUpdateOptions(selection, functions, thermostat)
+  return { selection = selection, functions = functions, thermostat = thermostat }
+end
+
+function createVacationFunction(coolHoldTemp, heatHoldTemp)
+  return { ["type"] = "createVacation",
+           params = { coolHoldTemp=coolHoldTemp, heatHoldTemp=heatHoldTemp } }
+end
+
+-- Function passed to the updateThermostats call to resume a program.
+function resumeProgramFunction()
+  return { ["type"] = "resumeProgram" }
+end
+
+-- Function passed to the updateThermostats call to send a message to the thermostat
+function sendMessageFunction(text)
+  return { ["type"]  = "sendMessage",
+           params = { text = text } }
+end
+
+-- Function passed to the updateThermostats call to acknowledge an alert
+-- Values for acknowledge_type: accept, decline, defer, unacknowledged.
+function acknowledgeFunction(thermostat_id, acknowledge_ref, acknowledge_type, remind_later)
+  return { ["type"] = "acknowledge",
+           params = { thermostatIdentifier = thermostat_id,
+                      ackRef = acknowledge_ref,
+                      ackType = acknowledge_type,
+                      remindMeLater = remind_later } }
+end
+
+-- Function passed to the updateThermostats set the occupied state of the thermostat
+-- EMS only.
+-- hold_type valid values: dateTime, nextTransition, indefinite, holdHours
+function setOccupiedFunction(is_occupied, hold_type)
+  return { ["type"] = "setOccupied",
+           params = { occupied = is_occupied,
+                      holdType = hold_type } }
+end
+
+-- Function passed to the thermostatsUpdate call to set a temperature hold. Need to pass both
+-- temperature params.
+-- holdType valid values: dateTime, nextTransition, indefinite, holdHours
+function setHoldFunction(coolHoldTemp, heatHoldTemp, holdType, holdHours)
+  return { ["type"] = "setHold",
+           params = { coolHoldTemp = coolHoldTemp, heatHoldTemp = heatHoldTemp,
+                      holdType = holdType, holdHours = holdHours } }
+end
+
+-- Object that represents a climate.
+function climateObject(climate_data)
+	return { name = climate_data.name,
+           climateRef = climate_data.climateRef,
+           isOccupied = climate_data.isOccupied,
+           coolFan = climate_data.coolFan,
+           heatFan = climate_data.heatFan,
+           vent = climate_data.vent,
+           ventilatorMinOnTime = climate_data.ventilatorMinOnTime,
+           owner = climate_data.owner,
+           ["type"] = climate_data["type"],
+           coolTemp = climate_data.coolTemp,
+           heatTemp = climate_data.heatTemp }
+end
+
+
+
+
 
     function init(lul_device)
       log("plugin version " .. PLUGIN_VERSION .. " starting up...", 50)
