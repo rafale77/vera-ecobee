@@ -1120,8 +1120,8 @@ local function refreshTokens(session)
     session.token_type    = res.token_type
     session.refresh_token = res.refresh_token
     session.scope         = res.scope
-    return session.access_token, session.token_type, session.refresh_token, session.scope
     task("Token refresh success!")
+    return session.access_token, session.token_type, session.refresh_token, session.scope
   end
 end
 
