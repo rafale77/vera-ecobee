@@ -291,8 +291,8 @@
                     },
                     "ControlCode": "climate"
                 }
-            ] --"control"
-        }, --"first tab"
+            ]
+        }, 
         {
             "Label": {
                 "lang_tag": "advanced",
