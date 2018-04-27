@@ -44,7 +44,6 @@
 
     local function getVeraTemperatureScale()
       local code, data = luup.inet.wget("http://localhost:3480/data_request?id=lu_sdata")
-      
       if (code == 0) then
         data = json.decode(data)
       end
@@ -439,9 +438,7 @@
     end
     
     local function getTokens(session)
-
       local access_token, token_type, refresh_token, scope = reqTokens(session, Client_ID)
-
       saveSession(session)
       return access_token, token_type, refresh_token, scope
     end
@@ -921,7 +918,7 @@
     function poll_ecobee()
       -- debug("in poll_ecobee()")
 
-      task("Clearing...", TASK_SUCCESS)
+      task("Connected!", TASK_SUCCESS)
 
       getStatus()
 
@@ -1051,7 +1048,6 @@ Returns ecobeePin and sets these values on success:
 function reqPin(session)
   local options = { url = "/authorize", headers = { Accept = "application/json" } }
   local data = { response_type = "ecobeePin", scope = session.scope, client_id = Client_ID }
-  task(Client_ID)
   local res = makeRequest(session, options, stringify(data))
         
   if res and res.ecobeePin and res.code then
@@ -1124,6 +1120,7 @@ local function refreshTokens(session)
     session.token_type    = res.token_type
     session.refresh_token = res.refresh_token
     session.scope         = res.scope
+    task("Token refresh success!")
     return session.access_token, session.token_type, session.refresh_token, session.scope
   end
 end
