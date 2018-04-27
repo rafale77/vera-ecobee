@@ -26,6 +26,7 @@
       <serviceId>urn:ecobee-com:serviceId:Ecobee1</serviceId>
       <name>GetPin</name>
       <run>
+
         Client_ID = lul_settings.Client_ID
         local session = loadSession()
         debug("Attempting to getPin...")

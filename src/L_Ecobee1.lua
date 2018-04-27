@@ -51,6 +51,7 @@
       veraTemperatureScale = ((code == 0) and (data ~= nil) and (data.temperature ~= nil)) and data.temperature or "C"
     end
 
+
     -- utility functions
 
     local function log(text, level)
@@ -438,7 +439,9 @@
     end
     
     local function getTokens(session)
+
       local access_token, token_type, refresh_token, scope = reqTokens(session, Client_ID)
+
       saveSession(session)
       return access_token, token_type, refresh_token, scope
     end

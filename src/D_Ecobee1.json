@@ -113,6 +113,7 @@
                     }
                 },
                 {
+
                     "ControlGroup": "1",
                     "ControlType": "variable",
                     "top": "1",
@@ -149,6 +150,7 @@
                     "Display": {
                         "Top": 100,
                         "Left": 100,
+
                         "Width": 150,
                         "Height": 20
                     }
@@ -172,8 +174,9 @@
                         "Service": "urn:ecobee-com:serviceId:Ecobee1",
                         "Action": "GetPin",
                         "Parameters": [{
-				"Name": "Client_ID",
+				                        "Name": "Client_ID",
                                 "ID": "Client_ID"}]
+
                     },
                     "ControlCode": "get_pin"
                 }
