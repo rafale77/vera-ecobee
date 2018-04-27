@@ -1,6 +1,6 @@
-Ecobee Plugin adapted modified for Openluup based on Watou's free plugin.
+# Ecobee Plugin adapted modified for Openluup based on Watou's free plugin.
 
-Release Note: V2.0
+! Release Note: V2.0
 
  - Split out Implemetation xml logic into L_Ecobee1.lua file
  - Integrated encrypted API file communication into main Lua file
@@ -8,9 +8,9 @@ Release Note: V2.0
  - Localized icons to reduce browser network traffic
  - Eliminated use of compressed json decoder
 
-Installation procedure:
+! Installation procedure:
 
-# Download the content of this repository
+- Download the content of this repository
 
 - Make sure your Openluup/lua library supports https. For this You can go to the Misc/OsCommand tab under Altui and install LUASEC using this command "luarocks install luasec"
 
