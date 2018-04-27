@@ -2,13 +2,17 @@
 
 Plugin will work on UI7 as well though I see no specific reason to not use the Appstore Released version which does not require your own developer's account.
 
-## Release Note: V2.0
+## Release Note: V2.0 (Openluup/UI7)
 
  - Split out Implemetation xml logic into L_Ecobee1.lua file
  - Integrated encrypted API file communication into main Lua file
  - Cosmetic refactoring with icons and layout for the main Ecobee device and Housemode device
  - Localized icons to reduce browser network traffic
  - Eliminated use of compressed json decoder
+ 
+## Release Note: V1.8 (UI7/UI5) need to have previously installed from Vera apstore.
+
+ - Cosmetic adjustments for UI7 Housemode
 
 ## Installation procedure:
 
