@@ -1,4 +1,4 @@
-# Ecobee Plugin adapted for Openluup based on Watou's plugin.
+# Ecobee Plugin adapted for Openluup based on Watou's original Vera plugin.
 
 ## Release Note: V2.0
 
