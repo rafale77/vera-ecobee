@@ -1,5 +1,7 @@
 # Ecobee Plugin adapted for Openluup based on Watou's original Vera plugin.
 
+Plugin will work on UI7 as well though I see no specific reason to not use the Appstore Released version which does not require your own developer's account.
+
 ## Release Note: V2.0
 
  - Split out Implemetation xml logic into L_Ecobee1.lua file
