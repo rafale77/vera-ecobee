@@ -6,6 +6,7 @@ Release Note: V2.0
 - Integrated encrypted API file communication into main Lua file
 - Cosmetic refactoring with icons and layout for the main Ecobee device and Housemode device
 - Localized icons to reduce browser network traffic
+- Eliminated use of compressed json decoder
 
 Installation procedure:
 
