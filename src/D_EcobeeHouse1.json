@@ -56,7 +56,7 @@
             },
             "Position": "0",
             "TabType": "flash",
-		"TopNavigationTab": "1",
+		"TopNavigationTab": 1,
             "top_navigation_tab": 1,
 	    "ControlGroup": [
                 {
