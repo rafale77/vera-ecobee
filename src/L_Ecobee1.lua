@@ -44,7 +44,6 @@
 
     local function getVeraTemperatureScale()
       local code, data = luup.inet.wget("http://localhost:3480/data_request?id=lu_sdata")
-      
       if (code == 0) then
         data = json.decode(data)
       end
@@ -439,9 +438,7 @@
     end
     
     local function getTokens(session)
-
       local access_token, token_type, refresh_token, scope = reqTokens(session, Client_ID)
-
       saveSession(session)
       return access_token, token_type, refresh_token, scope
     end
