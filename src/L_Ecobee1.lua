@@ -418,6 +418,7 @@
     local function saveSession(session)
       if session.error then
         log("Error: " .. tostring(session.error) .. ": " .. tostring(session.error_description))
+	task("Error: " .. tostring(session.error) .. ": " .. tostring(session.error_description))
       end
 
       writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "auth_token",    session.auth_token or "")
@@ -917,11 +918,9 @@
 
     function poll_ecobee()
       -- debug("in poll_ecobee()")
-
-      task("Connected!", TASK_SUCCESS)
-
+     task("Connected!", TASK_SUCCESS)
       getStatus()
-
+      
       -- set up the next poll
       local poll = tonumber(readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "poll", tostring(DEFAULT_POLL))) or DEFAULT_POLL
       if (poll < MIN_POLL) then poll = MIN_POLL end 
