@@ -5,7 +5,7 @@
     local TASK_ERROR_PERM = -2
     local TASK_SUCCESS = 4
     local TASK_BUSY = 1
-    local Client_ID = ""
+    local Client_ID
 
     -- constants
     local PLUGIN_VERSION = "2.0"
