@@ -1468,7 +1468,7 @@ end
       log("plugin version " .. PLUGIN_VERSION .. " starting up...", 50)
 
       PARENT_DEVICE = lul_device
-
+      Client_ID = luup.variable_get(ECOBEE_SID, "API_Key", lul_device)
       TemperaturePrecision = tonumber(readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "TemperaturePrecision", "1"))
       TemperaturePrecision = TemperaturePrecision or 1
       if TemperaturePrecision < 1 or TemperaturePrecision > 1000 then
