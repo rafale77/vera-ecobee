@@ -5,10 +5,10 @@
     local TASK_ERROR_PERM = -2
     local TASK_SUCCESS = 4
     local TASK_BUSY = 1
-    local Client_ID = ""
+    local Client_ID
 
     -- constants
-    local PLUGIN_VERSION = "2.0"
+    local PLUGIN_VERSION = "2.01"
     local ECOBEE_SID = "urn:ecobee-com:serviceId:Ecobee1"
     local TEMP_SENSOR_SID = "urn:upnp-org:serviceId:TemperatureSensor1"
     local TEMP_SETPOINT_HEAT_SID = "urn:upnp-org:serviceId:TemperatureSetpoint1_Heat"
@@ -418,6 +418,7 @@
     local function saveSession(session)
       if session.error then
         log("Error: " .. tostring(session.error) .. ": " .. tostring(session.error_description))
+	task("Error: " .. tostring(session.error) .. ": " .. tostring(session.error_description))
       end
 
       writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "auth_token",    session.auth_token or "")
@@ -917,11 +918,9 @@
 
     function poll_ecobee()
       -- debug("in poll_ecobee()")
-
-      task("Connected!", TASK_SUCCESS)
-
+     task("Connected!", TASK_SUCCESS)
       getStatus()
-
+      
       -- set up the next poll
       local poll = tonumber(readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "poll", tostring(DEFAULT_POLL))) or DEFAULT_POLL
       if (poll < MIN_POLL) then poll = MIN_POLL end 

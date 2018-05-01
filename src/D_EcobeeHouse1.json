@@ -1,439 +1,437 @@
 {
-    "flashicon": "house.png",
-    "default_icon": "house.png",
-    "imgIconBody": "",
-    "imgIconDimmable": "",
-    "imgIconTurnable": "",
-    "imgIconMin": "",
-    "imgIconMax": "",
-    "halloIconsDir": "pics/hallo",
-    "x": "2",
-    "y": "4",
-    "state_icons": [
-        {
-            "img": "house_0.png",
-            "conditions": [
-                {
-                    "service": "urn:upnp-org:serviceId:SwitchPower1",
-                    "variable": "Status",
-                    "operator": "==",
-                    "value": "0"
-                }
-            ]
-        },
-        {
-            "img": "house_100.png",
-            "conditions": [
-                {
-                    "service": "urn:upnp-org:serviceId:SwitchPower1",
-                    "variable": "Status",
-                    "operator": "==",
-                    "value": "1"
-                }
-            ]
-        }
-    ],
-    "inScene": "1",
-    "DisplayStatus": {
-        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-        "Variable": "currentClimateRef",
-        "MinValue": "home",
-        "MaxValue": "smart1"
-    },
-    "doc_url": {
-        "doc_language": 1,
-        "doc_manual": 1,
-        "doc_version": 1,
-        "doc_platform": 0,
-        "doc_page": "devices"
-    },
-    "ToggleButton": 1,
-    "Tabs": [
-        {
-            "Label": {
-                "lang_tag": "tabname_control",
-                "text": "Control"
-            },
-            "Position": "0",
-            "TabType": "flash",
-		"TopNavigationTab": 1,
-            "top_navigation_tab": 1,
-	    "ControlGroup": [
-                {
-                    "id": "1",
-                    "isSingle": "0",
-                    "scenegroup": "1"
-                },
-                {
-                    "id": "2",
-                    "type": "info",
-                    "scenegroup": "2"
-                }
-            ],
-            "SceneGroup": [
-                {
-                    "id": "1",
-                    "top": "0",
-                    "left": "0",
-                    "x": "1",
-                    "y": "4"
-                },
-                {
-                    "id": "2",
-                    "top": "0",
-                    "left": "1",
-                    "x": "1",
-                    "y": "1"
-                }
-            ],
-            "Control": [
-                {
-                    "ControlGroup": "1",
-                    "ControlType": "button",
-                    "top": "0",
-                    "left": "0",
-                    "Label": {
-                        "lang_tag": "cmd_home",
-                        "text": "Home"
-                    },
-                    "Display": {
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Variable": "currentClimateRef",
-                        "Value": "home",
-                        "Top": 20,
-                        "Left": 50,
-                        "Width": 75,
-                        "Height": 20
-                    },
-                    "Command": {
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Action": "SetClimateHold",
-                        "Parameters": [
-                            {
-                                "Name": "HoldClimateRef",
-                                "Value": "home"
-                            }
-                        ]
-                    }
-                },
-                {
-                    "ControlGroup": "1",
-                    "ControlType": "button",
-                    "top": "1",
-                    "left": "0",
-                    "Label": {
-                        "lang_tag": "cmd_away",
-                        "text": "Away"
-                    },
-                    "Display": {
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Variable": "currentClimateRef",
-                        "Value": "away",
-                        "Top": 20,
-                        "Left": 145,
-                        "Width": 75,
-                        "Height": 20
-                    },
-                    "Command": {
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Action": "SetClimateHold",
-                        "Parameters": [
-                            {
-                                "Name": "HoldClimateRef",
-                                "Value": "away"
-                            }
-                        ]
-                    }
-                },
+	"flashicon": "house.png",
+	"default_icon": "house.png",
+	"imgIconBody": "",
+	"imgIconDimmable": "",
+	"imgIconTurnable": "",
+	"imgIconMin": "",
+	"imgIconMax": "",
+	"halloIconsDir": "pics/hallo",
+	"x": "2",
+	"y": "4",
+	"state_icons": [{
+			"img": "house_0.png",
+			"conditions": [{
+				"service": "urn:upnp-org:serviceId:SwitchPower1",
+				"variable": "Status",
+				"operator": "==",
+				"value": "0"
+			}]
+		},
 		{
-                    "ControlGroup": "1",
-                    "ControlType": "button",
-                    "top": "2",
-                    "left": "0",
-                    "Label": {
-                        "lang_tag": "cmd_sleep",
-                        "text": "Sleep"
-                    },
-                    "Display": {
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Variable": "currentClimateRef",
-                        "Value": "sleep",
-                        "Top": 50,
-                        "Left": 50,
-                        "Width": 75,
-                        "Height": 20
-                    },
-                    "Command": {
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Action": "SetClimateHold",
-                        "Parameters": [
-                            {
-                                "Name": "HoldClimateRef",
-                                "Value": "sleep"
-                            }
-                        		]
-                    	}
-                },
+			"img": "house_100.png",
+			"conditions": [{
+				"service": "urn:upnp-org:serviceId:SwitchPower1",
+				"variable": "Status",
+				"operator": "==",
+				"value": "1"
+			}]
+		}
+	],
+	"inScene": "1",
+	"DisplayStatus": {
+		"Service": "urn:ecobee-com:serviceId:Ecobee1",
+		"Variable": "currentClimateRef",
+		"MinValue": "home",
+		"MaxValue": "smart1"
+	},
+	"doc_url": {
+		"doc_language": 1,
+		"doc_manual": 1,
+		"doc_version": 1,
+		"doc_platform": 0,
+		"doc_page": "devices"
+	},
+	"ToggleButton": 1,
+	"Tabs": [{
+			"Label": {
+				"lang_tag": "tabname_control",
+				"text": "Control"
+			},
+			"Position": "0",
+			"TabType": "flash",
+			"TopNavigationTab": 1,
+			"top_navigation_tab": 1,
+			"ControlGroup": [{
+				"id": "1",
+				"isSingle": "1",
+				"scenegroup": "1"
+			},
+                        {
+				"id": "2",
+				"type": "info",
+				"scenegroup": "1"
+			}],
+			"SceneGroup": [{
+					"id": "1",
+					"top": "0",
+					"left": "0",
+					"x": "1",
+					"y": "4"
+				},
+				{
+					"id": "2",
+					"top": "0",
+					"left": "1",
+					"x": "1",
+					"y": "1"
+				}
+			],
+			"Control": [{
+					"ControlGroup": "1",
+					"ControlType": "button",
+					"top": "0",
+					"left": "0",
+					"Label": {
+						"lang_tag": "cmd_home",
+						"text": "Home"
+					},
+					"Display": {
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Variable": "currentClimateRef",
+						"Value": "home",
+						"Top": 20,
+						"Left": 50,
+						"Width": 75,
+						"Height": 20
+					},
+					"Command": {
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Action": "SetClimateHold",
+						"Parameters": [{
+							"Name": "HoldClimateRef",
+							"Value": "home"
+						}]
+					},
+					"ControlCode": "mode_home"
+				},
+				{
+					"ControlGroup": "1",
+					"ControlType": "button",
+					"top": "1",
+					"left": "0",
+					"Label": {
+						"lang_tag": "cmd_away",
+						"text": "Away"
+					},
+					"Display": {
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Variable": "currentClimateRef",
+						"Value": "away",
+						"Top": 20,
+						"Left": 145,
+						"Width": 75,
+						"Height": 20
+					},
+					"Command": {
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Action": "SetClimateHold",
+						"Parameters": [{
+							"Name": "HoldClimateRef",
+							"Value": "away"
+						}]
+					},
+					"ControlCode": "mode_away"
+				},
+				{
+					"ControlGroup": "1",
+					"ControlType": "button",
+					"top": "2",
+					"left": "0",
+					"Label": {
+						"lang_tag": "cmd_sleep",
+						"text": "Sleep"
+					},
+					"Display": {
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Variable": "currentClimateRef",
+						"Value": "sleep",
+						"Top": 50,
+						"Left": 50,
+						"Width": 75,
+						"Height": 20
+					},
+					"Command": {
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Action": "SetClimateHold",
+						"Parameters": [{
+							"Name": "HoldClimateRef",
+							"Value": "sleep"
+						}]
+					},
+					"ControlCode": "mode_sleep"
+				},
+				{
+					"ControlGroup": "1",
+					"ControlType": "button",
+					"top": "3",
+					"left": "0",
+					"Label": {
+						"lang_tag": "cmd_smart1",
+						"text": "Vacation"
+					},
+					"Display": {
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Variable": "currentClimateRef",
+						"Value": "smart1",
+						"Top": 50,
+						"Left": 145,
+						"Width": 75,
+						"Height": 20
+					},
+					"Command": {
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Action": "SetClimateHold",
+						"Parameters": [{
+							"Name": "HoldClimateRef",
+							"Value": "smart1"
+						}]
+					},
+					"ControlCode": "mode_vacation"
+				},
+				{
+					"ControlGroup": "1",
+					"ControlType": "button",
+					"top": "3",
+					"left": "0",
+					"Label": {
+						"lang_tag": "cmd_resume",
+						"text": "Resume"
+					},
+					"Display": {
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Variable": "currentEventType",
+						"Value": "none",
+						"Top": 50,
+						"Left": 240,
+						"Width": 75,
+						"Height": 20
+					},
+					"Command": {
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Action": "ResumeProgram",
+						"Parameters": []
+					},
+					"ControlCode": "mode_schedule"
+				},
+				{
+					"ControlGroup": "2",
+					"ControlType": "label",
+					"top": "0",
+					"left": "0",
+					"Label": {
+						"lang_tag": "event",
+						"text": "Event:"
+					},
+					"Display": {
+						"Top": 120,
+						"Left": 50,
+						"Width": 75,
+						"Height": 20
+					},
+					"ControlCode": "event"
+				},
+				{
+					"ControlGroup": "2",
+					"ControlType": "variable",
+					"top": "1",
+					"left": "0",
+					"Display": {
+						"Top": 120,
+						"Left": 145,
+						"Width": 75,
+						"Height": 20,
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Variable": "currentEventType"
+					},
+					"ControlCode": "event"
+				},
+				{
+					"ControlGroup": "2",
+					"ControlType": "label",
+					"top": "0",
+					"left": "1",
+					"Label": {
+						"lang_tag": "climate",
+						"text": "Climate:"
+					},
+					"Display": {
+						"Top": 100,
+						"Left": 50,
+						"Width": 75,
+						"Height": 20
+					},
+					"ControlCode": "climate"
+				},
+				{
+					"ControlGroup": "2",
+					"ControlType": "variable",
+					"top": "1",
+					"left": "1",
+					"Display": {
+						"Top": 100,
+						"Left": 145,
+						"Width": 75,
+						"Height": 20,
+						"Service": "urn:ecobee-com:serviceId:Ecobee1",
+						"Variable": "currentClimateRef"
+					},
+					"ControlCode": "climate"
+				}
+			]
+		},
 		{
-                    "ControlGroup": "1",
-                    "ControlType": "button",
-                    "top": "3",
-                    "left": "0",
-                    "Label": {
-                        "lang_tag": "cmd_smart1",
-                        "text": "Vacation"
-                    },
-                    "Display": {
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Variable": "currentClimateRef",
-                        "Value": "smart1",
-                        "Top": 50,
-                        "Left": 145,
-                        "Width": 75,
-                        "Height": 20
-                    },
-                    "Command": {
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Action": "SetClimateHold",
-                        "Parameters": [
-                            {
-                                "Name": "HoldClimateRef",
-                                "Value": "smart1"
-                            }
-                        		]
-                    }
-                },
+			"Label": {
+				"lang_tag": "advanced",
+				"text": "Advanced"
+			},
+			"Position": "1",
+			"TabType": "javascript",
+			"ScriptName": "shared.js",
+			"Function": "advanced_device"
+		},
 		{
-                    "ControlGroup": "1",
-                    "ControlType": "button",
-                    "top": "3",
-                    "left": "0",
-                    "Label": {
-                        "lang_tag": "cmd_resume",
-                        "text": "Resume"
-                    },
-                    "Display": {
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Variable": "currentEventType",
-                        "Value": "none",
-                        "Top": 50,
-                        "Left": 240,
-                        "Width": 75,
-                        "Height": 20
-                    },
-                    "Command": {
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Action": "ResumeProgram",
-                        "Parameters": []
-                    }
-                },
-                {
-                    "ControlGroup": "2",
-                    "ControlType": "label",
-                    "top": "0",
-                    "left": "0",
-                    "Label": {
-                        "lang_tag": "event",
-                        "text": "Event:"
-                    },
-                    "Display": {
-                        "Top": 120,
-                        "Left": 50,
-                        "Width": 75,
-                        "Height": 20
-                    },
-                    "ControlCode": "event"
-                },
-                {
-                    "ControlGroup": "2",
-                    "ControlType": "variable",
-                    "top": "1",
-                    "left": "0",
-                    "Display": {
-                        "Top": 120,
-                        "Left": 145,
-                        "Width": 75,
-                        "Height": 20,
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Variable": "currentEventType"
-                    },
-                    "ControlCode": "event"
-                },
-                {
-                    "ControlGroup": "2",
-                    "ControlType": "label",
-                    "top": "0",
-                    "left": "1",
-                    "Label": {
-                        "lang_tag": "climate",
-                        "text": "Climate:"
-                    },
-                    "Display": {
-                        "Top": 100,
-                        "Left": 50,
-                        "Width": 75,
-                        "Height": 20
-                    },
-                    "ControlCode": "climate"
-                },
-                {
-                    "ControlGroup": "2",
-                    "ControlType": "variable",
-                    "top": "1",
-                    "left": "1",
-                    "Display": {
-                        "Top": 100,
-                        "Left": 145,
-                        "Width": 75,
-                        "Height": 20,
-                        "Service": "urn:ecobee-com:serviceId:Ecobee1",
-                        "Variable": "currentClimateRef"
-                    },
-                    "ControlCode": "climate"
-                }
-            ]
-        }, 
-        {
-            "Label": {
-                "lang_tag": "advanced",
-                "text": "Advanced"
-            },
-            "Position": "1",
-            "TabType": "javascript",
-            "ScriptName": "shared.js",
-            "Function": "advanced_device"
-        },
-        {
-            "Label": {
-                "lang_tag": "logs",
-                "text": "Logs"
-            },
-            "Position": "2",
-            "TabType": "javascript",
-            "ScriptName": "shared.js",
-            "Function": "device_logs"
-        },
-        {
-            "Label": {
-                "lang_tag": "notifications",
-                "text": "Notifications"
-            },
-            "Position": "3",
-            "TabType": "javascript",
-            "ScriptName": "shared.js",
-            "Function": "device_notifications"
-        }
-    ],
-    "sceneList": {
-        "group_1": {
-            "cmd_1": {
-                "label": "HOME",
-                "serviceId": "urn:ecobee-com:serviceId:Ecobee1",
-                "action": "SetClimateHold",
-                "arguments": {
-                    "HoldClimateRef": "home"
-                },
-                "display": {
-                    "service": "urn:ecobee-com:serviceId:Ecobee1",
-                    "variable": "currentClimateRef",
-                    "value": "home"
-                }
-            },
-            "cmd_2": {
-                "label": "AWAY",
-                "serviceId": "urn:ecobee-com:serviceId:Ecobee1",
-                "action": "SetClimateHold",
-                "arguments": {
-                    "HoldClimateRef": "away"
-                },
-                "display": {
-                    "service": "urn:ecobee-com:serviceId:Ecobee1",
-                    "variable": "currentClimateRef",
-                    "value": "away"
-                }
-            },
-            "cmd_3": {
-            "label": "SLEEP",
-                "serviceId": "urn:ecobee-com:serviceId:Ecobee1",
-                "action": "SetClimateHold",
-                "arguments": {
-                    "HoldClimateRef": "sleep"
-                },
-                "display": {
-                    "service": "urn:ecobee-com:serviceId:Ecobee1",
-                    "variable": "currentClimateRef",
-                    "value": "sleep"
-                }
-            },
-            "cmd_4": {
-                "label": "VACATION",
-                "serviceId": "urn:ecobee-com:serviceId:Ecobee1",
-                "action": "SetClimateHold",
-                "arguments": {
-                    "HoldClimateRef": "smart1"
-                },
-                "display": {
-                    "service": "urn:ecobee-com:serviceId:Ecobee1",
-                    "variable": "currentClimateRef",
-                    "value": "smart1"
-                }
-            }
-        }
-    },
-    "eventList2": [
-        {
-            "id": 1,
-            "label": {
-                "lang_tag": "a_device_is_set_to_home_or_away",
-                "text": "A device is set to home, away, wakeup or sleep"
-            },
-            "serviceId": "urn:ecobee-com:serviceId:Ecobee1",
-            "argumentList": [
-                {
-                    "id": 1,
-                    "dataType": "string",
-                    "defaultValue": "home",
-                    "allowedValueList": [
-                        {
-                            "Away": "away",
-                            "HumanFriendlyText": {
-                                "lang_tag": "hft_device_set_to_away",
-                                "text": "_DEVICE_NAME_ is set to away"
-                            }
-                        },
-                        {
-                            "Home": "home",
-                            "HumanFriendlyText": {
-                                "lang_tag": "hft_device_set_to_home",
-                                "text": "_DEVICE_NAME_ is set to home"
-                            }
-                        },
-                        {
-                            "Sleep": "sleep",
-                            "HumanFriendlyText": {
-                                "lang_tag": "hft_device_set_to_sleep",
-                                "text": "_DEVICE_NAME_ is set to sleep"
-                            }
-                        },
-                        {
-                            "Vacation": "vacation",
-                            "HumanFriendlyText": {
-                                "lang_tag": "hft_device_set_to_vacation",
-                                "text": "_DEVICE_NAME_ is set to vacation"
-                            }
-                        }
-                    ],
-                    "name": "currentClimateRef",
-                    "comparisson": "=",
-                    "prefix": {
-                        "lang_tag": "which_mode",
-                        "text": "Which comfort setting"
-                    },
-                    "suffix": {}
-                }
-            ]
-        }
-    ],
-    "DeviceType": "urn:schemas-ecobee-com:device:EcobeeHouse:1",
-    "device_type": "urn:schemas-ecobee-com:device:EcobeeHouse:1"
+			"Label": {
+				"lang_tag": "logs",
+				"text": "Logs"
+			},
+			"Position": "2",
+			"TabType": "javascript",
+			"ScriptName": "shared.js",
+			"Function": "device_logs"
+		},
+		{
+			"Label": {
+				"lang_tag": "notifications",
+				"text": "Notifications"
+			},
+			"Position": "3",
+			"TabType": "javascript",
+			"ScriptName": "shared.js",
+			"Function": "device_notifications"
+		}
+	],
+	"sceneList": {
+		"group_1": {
+			"cmd_1": {
+				"label": "HOME",
+				"serviceId": "urn:ecobee-com:serviceId:Ecobee1",
+				"action": "SetClimateHold",
+				"arguments": {
+					"HoldClimateRef": "home"
+				},
+				"display": {
+					"service": "urn:ecobee-com:serviceId:Ecobee1",
+					"variable": "currentClimateRef",
+					"value": "home"
+				}
+			},
+			"cmd_2": {
+				"label": "AWAY",
+				"serviceId": "urn:ecobee-com:serviceId:Ecobee1",
+				"action": "SetClimateHold",
+				"arguments": {
+					"HoldClimateRef": "away"
+				},
+				"display": {
+					"service": "urn:ecobee-com:serviceId:Ecobee1",
+					"variable": "currentClimateRef",
+					"value": "away"
+				}
+			},
+			"cmd_3": {
+				"label": "SLEEP",
+				"serviceId": "urn:ecobee-com:serviceId:Ecobee1",
+				"action": "SetClimateHold",
+				"arguments": {
+					"HoldClimateRef": "sleep"
+				},
+				"display": {
+					"service": "urn:ecobee-com:serviceId:Ecobee1",
+					"variable": "currentClimateRef",
+					"value": "sleep"
+				}
+			},
+			"cmd_4": {
+				"label": "VACATION",
+				"serviceId": "urn:ecobee-com:serviceId:Ecobee1",
+				"action": "SetClimateHold",
+				"arguments": {
+					"HoldClimateRef": "smart1"
+				},
+				"display": {
+					"service": "urn:ecobee-com:serviceId:Ecobee1",
+					"variable": "currentClimateRef",
+					"value": "smart1"
+				}
+			},
+			"cmd_5": {
+				"label": "RESUME",
+				"serviceId": "urn:ecobee-com:serviceId:Ecobee1",
+				"action": "ResumeProgram",
+				"arguments": {},
+				"display": {
+					"service": "urn:ecobee-com:serviceId:Ecobee1"
+				}
+			}
+		}
+	},
+	"eventList2": [{
+		"id": 1,
+		"label": {
+			"lang_tag": "a_device_is_set_to_home_or_away",
+			"text": "A device is set to home, away, wakeup or sleep"
+		},
+		"serviceId": "urn:ecobee-com:serviceId:Ecobee1",
+		"argumentList": [{
+			"id": 1,
+			"dataType": "string",
+			"defaultValue": "home",
+			"allowedValueList": [{
+					"Away": "away",
+					"HumanFriendlyText": {
+						"lang_tag": "hft_device_set_to_away",
+						"text": "_DEVICE_NAME_ is set to away"
+					}
+				},
+				{
+					"Home": "home",
+					"HumanFriendlyText": {
+						"lang_tag": "hft_device_set_to_home",
+						"text": "_DEVICE_NAME_ is set to home"
+					}
+				},
+				{
+					"Sleep": "sleep",
+					"HumanFriendlyText": {
+						"lang_tag": "hft_device_set_to_sleep",
+						"text": "_DEVICE_NAME_ is set to sleep"
+					}
+				},
+				{
+					"Vacation": "vacation",
+					"HumanFriendlyText": {
+						"lang_tag": "hft_device_set_to_vacation",
+						"text": "_DEVICE_NAME_ is set to vacation"
+					}
+				},
+				{
+					"Resume": "resume",
+					"HumanFriendlyText": {
+						"lang_tag": "hft_device_resume",
+						"text": "Schedule resumed"
+					}
+				}
+			],
+			"name": "currentClimateRef",
+			"comparisson": "=",
+			"prefix": {
+				"lang_tag": "which_mode",
+				"text": "Which comfort setting"
+			},
+			"suffix": {}
+		}]
+	}],
+	"DeviceType": "urn:schemas-ecobee-com:device:EcobeeHouse:1",
+	"device_type": "urn:schemas-ecobee-com:device:EcobeeHouse:1"
 }

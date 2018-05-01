@@ -26,15 +26,20 @@
       <serviceId>urn:ecobee-com:serviceId:Ecobee1</serviceId>
       <name>GetPin</name>
       <run>
+       if lul_settings.Client_ID ~= "" then
         Client_ID = lul_settings.Client_ID
+       else
+        Client_ID = luup.variable_get(ECOBEE_SID, "API_Key", lul_device)
+       end
         local session = loadSession()
         debug("Attempting to getPin...")
         task("Trying to getPin")
         local ecobeePin = getPin(session, Client_ID)
         if ecobeePin then
           task("Register at ecobee.com now: " .. ecobeePin)
-          writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "DisplayLabel", "My Apps PIN:")
-          writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "DisplayValue", ecobeePin)
+          writeVariableIfChanged(lul_device, ECOBEE_SID, "DisplayLabel", "My Apps PIN:")
+          writeVariableIfChanged(lul_device, ECOBEE_SID, "DisplayValue", ecobeePin)
+          writeVariableIfChanged(lul_device, ECOBEE_SID, "API_Key", Client_ID)
         end
       </run>
     </action>
