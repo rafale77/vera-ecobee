@@ -27,7 +27,9 @@
       <name>GetPin</name>
       <run>
        if lul_settings.Client_ID ~= "" then
-        Client_ID = lul_settings.Client_ID
+         Client_ID = lul_settings.Client_ID
+       else
+         Client_ID = luup.variable_get(ECOBEE_SID, "API_Key", lul_device)
        end
         local session = loadSession()
         debug("Attempting to getPin...")
