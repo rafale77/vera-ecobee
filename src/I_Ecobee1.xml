@@ -26,7 +26,7 @@
       <serviceId>urn:ecobee-com:serviceId:Ecobee1</serviceId>
       <name>GetPin</name>
       <run>
-       if lul_settings.Client_ID ~= "" then
+       if lul_settings.Client_ID ~= nil and lul_settings.Client_ID ~= "" then
          Client_ID = lul_settings.Client_ID
        else
          Client_ID = luup.variable_get(ECOBEE_SID, "API_Key", lul_device)
