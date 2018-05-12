@@ -1,0 +1,287 @@
+<?xml version="1.0"?>
+<!-- 
+ MiOS (Vera) Plugin for ecobee Thermostats
+
+ Copyright (C) 2013-2016  John W. Cocula and others
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<implementation>
+  <files>L_Ecobee1.lua</files>
+  <functions></functions>
+  <startup>init</startup>
+  <actionList>
+    <action>
+      <serviceId>urn:ecobee-com:serviceId:Ecobee1</serviceId>
+      <name>GetPin</name>
+      <run>
+       if lul_settings.Client_ID ~= nil and lul_settings.Client_ID ~= "" then
+         Client_ID = lul_settings.Client_ID
+       else
+         Client_ID = luup.variable_get(ECOBEE_SID, "API_Key", lul_device)
+       end
+        local session = loadSession()
+        debug("Attempting to getPin...")
+        task("Trying to getPin")
+        local ecobeePin = getPin(session, Client_ID)
+        if ecobeePin then
+          task("Register at ecobee.com now: " .. ecobeePin)
+          writeVariableIfChanged(lul_device, ECOBEE_SID, "DisplayLabel", "My Apps PIN:")
+          writeVariableIfChanged(lul_device, ECOBEE_SID, "DisplayValue", ecobeePin)
+          writeVariableIfChanged(lul_device, ECOBEE_SID, "API_Key", Client_ID)
+        end
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:ecobee-com:serviceId:Ecobee1</serviceId>
+      <name>SetStatus</name>
+      <run>
+        luup.variable_set(ECOBEE_SID, "status", lul_settings.status or "0", lul_device)
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:ecobee-com:serviceId:Ecobee1</serviceId>
+      <name>GetStatus</name>
+      <run>
+        return luup.variable_get(ECOBEE_SID, "status", lul_device)
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:SwitchPower1</serviceId>
+      <name>GetStatus</name>
+      <run>
+        return luup.variable_get(SWITCH_POWER_SID, "Status", lul_device)
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:SwitchPower1</serviceId>
+      <name>SetTarget</name>
+      <run>
+        local away
+        if (lul_settings.newTargetValue == "1") then
+          away = false
+        elseif (lul_settings.newTargetValue == "0") then
+          away = true
+        else
+          log("SetTarget received invalid arg: " .. tostring(lul_settings.newTargetValue))
+          return
+        end
+
+        if not setAway(loadSession(), lul_device, away) then
+          task("Failed to send away command.")
+        end
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:SwitchPower1</serviceId>
+      <name>GetTarget</name>
+      <run>
+        return luup.variable_get(SWITCH_POWER_SID, "Status", lul_device)
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSensor1</serviceId>
+      <name>GetApplication</name>
+      <run>
+        return ecobeeToUpnp(TEMP_SENSOR_SID, "Application")
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSensor1</serviceId>
+      <name>SetApplication</name>
+      <run>
+        -- no point yet that I know
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSensor1</serviceId>
+      <name>GetCurrentTemperature</name>
+      <run>
+        return luup.variable_get(TEMP_SENSOR_SID, "CurrentTemperature", lul_device)
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSetpoint1_Heat</serviceId>
+      <name>GetApplication</name>
+      <run>
+        return ecobeeToUpnp(TEMP_SETPOINT_HEAT_SID, "Application")
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSetpoint1_Heat</serviceId>
+      <name>SetCurrentSetpoint</name>
+      <run>
+        local heatHoldTemp = upnpToEcobee(TEMP_SETPOINT_HEAT_SID, "SetCurrentSetpoint", "NewCurrentSetpoint", lul_settings)
+        local session = loadSession()
+        local func = ecobee.setHoldFunction(nil, heatHoldTemp)
+        if not setHold(session, nil, lul_device, func) then
+          task("Failed to set heat temperature setpoint.")
+        end
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSetpoint1_Heat</serviceId>
+      <name>GetCurrentSetpoint</name>
+      <run>
+        return luup.variable_get(TEMP_SETPOINT_HEAT_SID, "CurrentSetpoint", lul_device)
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSetpoint1_Cool</serviceId>
+      <name>GetApplication</name>
+      <run>
+        return ecobeeToUpnp(TEMP_SETPOINT_COOL_SID, "Application")
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSetpoint1_Cool</serviceId>
+      <name>SetCurrentSetpoint</name>
+      <run>
+        local coolHoldTemp = upnpToEcobee(TEMP_SETPOINT_COOL_SID, "SetCurrentSetpoint", "NewCurrentSetpoint", lul_settings)
+        local session = loadSession()
+        local func = ecobee.setHoldFunction(coolHoldTemp, nil)
+        if not setHold(session, nil, lul_device, func) then
+          task("Failed to set cool temperature setpoint.")
+        end
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSetpoint1_Cool</serviceId>
+      <name>GetCurrentSetpoint</name>
+      <run>
+        return luup.variable_get(TEMP_SETPOINT_COOL_SID, "CurrentSetpoint", lul_device)
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSetpoint1</serviceId>
+      <name>GetApplication</name>
+      <run>
+        return ecobeeToUpnp(TEMP_SETPOINT_SID, "Application")
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSetpoint1</serviceId>
+      <name>SetCurrentSetpoint</name>
+      <run>
+        local holdTemp = upnpToEcobee(TEMP_SETPOINT_SID, "SetCurrentSetpoint", "NewCurrentSetpoint", lul_settings)
+        local modeStatus = luup.variable_get(HVAC_USER_SID, "ModeStatus", lul_device) or "AutoChangeOver"
+        local heatHoldTemp = (modeStatus ~= "CoolOn") and holdTemp or nil
+        local coolHoldTemp = (modeStatus ~= "HeatOn") and holdTemp or nil
+        local session = loadSession()
+        local func = ecobee.setHoldFunction(coolHoldTemp, heatHoldTemp)
+        if not setHold(session, nil, lul_device, func) then
+          task("Failed to set temperature setpoint.")
+        end
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:TemperatureSetpoint1</serviceId>
+      <name>GetCurrentSetpoint</name>
+      <run>
+        return luup.variable_get(TEMP_SETPOINT_SID, "CurrentSetpoint", lul_device)
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:HVAC_UserOperatingMode1</serviceId>
+      <name>SetModeTarget</name>
+      <run>
+        -- tell the ecobee to switch to lul_settings.NewModeTarget
+        local hvacMode = upnpToEcobee(HVAC_USER_SID, "SetModeTarget", "NewModeTarget", lul_settings)
+        local session = loadSession()
+        local selection = getSelection(session, lul_device) 
+        if hvacMode and updateThermostats(session, ecobee.thermostatsUpdateOptions(selection, nil, 
+                                                         { settings = { hvacMode = hvacMode } })) then
+          writeVariableIfChanged(lul_device, HVAC_USER_SID, "ModeTarget", lul_settings.NewModeTarget)
+          getStatusSoon()
+        else
+          task("Failed to set new hvacMode to " .. tostring(hvacMode))
+        end
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:HVAC_UserOperatingMode1</serviceId>
+      <name>GetModeTarget</name>
+      <run>
+        return luup.variable_get(HVAC_USER_SID, "ModeTarget", lul_device) or "AutoChangeOver"
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:HVAC_UserOperatingMode1</serviceId>
+      <name>GetModeStatus</name>
+      <run>
+        return luup.variable_get(HVAC_USER_SID, "ModeStatus", lul_device)
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:HVAC_FanOperatingMode1</serviceId>
+      <name>SetMode</name>
+      <run>
+        local session = loadSession()
+        local func = ecobee.setHoldFunction()
+        func.params.fan = upnpToEcobee(HVAC_FAN_SID, "SetMode", "NewMode", lul_settings)
+        if not setHold(session, nil, lul_device, func) then
+          task("Failed to set fan mode to " .. tostring(mode))
+        end
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:HVAC_FanOperatingMode1</serviceId>
+      <name>GetMode</name>
+      <run>
+        return luup.variable_get(HVAC_FAN_SID, "Mode", lul_device) or "Auto"
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:upnp-org:serviceId:HVAC_FanOperatingMode1</serviceId>
+      <name>GetFanStatus</name>
+      <run>
+        return luup.variable_get(HVAC_FAN_SID, "FanStatus", lul_device) or "Unknown"
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:ecobee-com:serviceId:Ecobee1</serviceId>
+      <name>ResumeProgram</name>
+      <run>
+        local session = loadSession()
+        return resumeProgram(session, getSelection(session, lul_device), 3)
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:ecobee-com:serviceId:Ecobee1</serviceId>
+      <name>SendMessage</name>
+      <run>
+        local session = loadSession()
+        local selection = getSelection(session, lul_device)
+        local functions = { ecobee.sendMessageFunction(lul_settings.MessageText) }
+        return updateThermostats(session, ecobee.thermostatsUpdateOptions(selection, functions))
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:ecobee-com:serviceId:Ecobee1</serviceId>
+      <name>SetClimateHold</name>
+      <run>
+        local session = loadSession()
+        local selection = getSelection(session, lul_device)
+        return setClimateHold(session, selection, lul_device, lul_settings.HoldClimateRef)
+      </run>
+    </action>
+    <action>
+      <serviceId>urn:micasaverde-com:serviceId:SecuritySensor1</serviceId>
+      <name>SetArmed</name>
+      <run>
+        luup.variable_set(SECURITY_SENSOR_SID, "Armed", lul_settings.newArmedValue, lul_device)
+      </run>
+    </action>
+  </actionList>
+</implementation>
