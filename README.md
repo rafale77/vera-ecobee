@@ -1,8 +1,12 @@
-# Ecobee Plugin adapted for Openluup based on Watou's original Vera plugin.
+# Ecobee Plugin adapted for openluup based on Watou's original Vera plugin.
 
 Plugin will work on UI7 as well though I see no specific reason to not use the Appstore Released version which does not require your own developer's account.
 
-## Release Note: V2.0 (Openluup/UI7)
+## Release Note: V2.02 (openLuup/UI7)
+
+ - Implemented API Key Retention: If connection is lost, clicking the getpin button even without the API key field will get you a new pin if you have previously been connected.
+
+## Release Note: V2.0 (openLuup/UI7)
 
  - Split out Implemetation xml logic into L_Ecobee1.lua file
  - Integrated encrypted API file communication into main Lua file
@@ -18,11 +22,11 @@ Plugin will work on UI7 as well though I see no specific reason to not use the A
 
 - Download the content of this repository
 
-- Make sure your Openluup/lua library supports https. For this You can go to the Misc/OsCommand tab under Altui and install LUASEC using this command "luarocks install luasec"
+- Make sure your Openluup/lua library supports https. For this You can go to the Misc/OsCommand tab under Altui and install LUASEC using this command "luarocks install luasec". This assumes that you also have luarocks installed. Follow the instructions here: https://github.com/luarocks/luarocks/wiki/Download
 
 - Copy the content of the icons folder into the /#your Openluup folder#/icons.
 
-- Copy the content of the src folder into /#your Openluup folder#
+- Copy the content of the repo into /#your Openluup folder#
 
 - Create a new device in ALTUI using the D_Ecobee1.xml and I_Ecobee1.xml as your device files
 
