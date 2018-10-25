@@ -978,7 +978,7 @@ local function makeRequest(session, options, dataString)
   options.headers = options.headers or {}
   options.headers["User-Agent"] = "ecobee-lua-api/" .. version
   options.headers["Content-Type"] = options.headers["Content-Type"] or "application/json;charset=UTF-8"
-  options.protocol = "tlsv1"
+  options.protocol = "tlsv1_2"
   local errmsg
 
   if options.method == "POST" then
