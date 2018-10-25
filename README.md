@@ -2,6 +2,10 @@
 
 Plugin will work on UI7 as well though I see no specific reason to not use the Appstore Released version which does not require your own developer's account.
 
+## Release Note: V2.1 (openLuup/UI7)
+
+ - Implemented TLS v1.2 to support updates to the ecobee API from 10/23/18
+
 ## Release Note: V2.02 (openLuup/UI7)
 
  - Implemented API Key Retention: If connection is lost, clicking the getpin button even without the API key field will get you a new pin if you have previously been connected.
