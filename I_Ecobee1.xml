@@ -124,7 +124,7 @@
       <run>
         local heatHoldTemp = upnpToEcobee(TEMP_SETPOINT_HEAT_SID, "SetCurrentSetpoint", "NewCurrentSetpoint", lul_settings)
         local session = loadSession()
-        local func = ecobee.setHoldFunction(nil, heatHoldTemp)
+        local func = setHoldFunction(nil, heatHoldTemp)
         if not setHold(session, nil, lul_device, func) then
           task("Failed to set heat temperature setpoint.")
         end
@@ -150,7 +150,7 @@
       <run>
         local coolHoldTemp = upnpToEcobee(TEMP_SETPOINT_COOL_SID, "SetCurrentSetpoint", "NewCurrentSetpoint", lul_settings)
         local session = loadSession()
-        local func = ecobee.setHoldFunction(coolHoldTemp, nil)
+        local func = setHoldFunction(coolHoldTemp, nil)
         if not setHold(session, nil, lul_device, func) then
           task("Failed to set cool temperature setpoint.")
         end
@@ -179,7 +179,7 @@
         local heatHoldTemp = (modeStatus ~= "CoolOn") and holdTemp or nil
         local coolHoldTemp = (modeStatus ~= "HeatOn") and holdTemp or nil
         local session = loadSession()
-        local func = ecobee.setHoldFunction(coolHoldTemp, heatHoldTemp)
+        local func = setHoldFunction(coolHoldTemp, heatHoldTemp)
         if not setHold(session, nil, lul_device, func) then
           task("Failed to set temperature setpoint.")
         end
@@ -200,7 +200,7 @@
         local hvacMode = upnpToEcobee(HVAC_USER_SID, "SetModeTarget", "NewModeTarget", lul_settings)
         local session = loadSession()
         local selection = getSelection(session, lul_device) 
-        if hvacMode and updateThermostats(session, ecobee.thermostatsUpdateOptions(selection, nil, 
+        if hvacMode and updateThermostats(session, thermostatsUpdateOptions(selection, nil, 
                                                          { settings = { hvacMode = hvacMode } })) then
           writeVariableIfChanged(lul_device, HVAC_USER_SID, "ModeTarget", lul_settings.NewModeTarget)
           getStatusSoon()
@@ -228,7 +228,7 @@
       <name>SetMode</name>
       <run>
         local session = loadSession()
-        local func = ecobee.setHoldFunction()
+        local func = setHoldFunction()
         func.params.fan = upnpToEcobee(HVAC_FAN_SID, "SetMode", "NewMode", lul_settings)
         if not setHold(session, nil, lul_device, func) then
           task("Failed to set fan mode to " .. tostring(mode))
@@ -263,8 +263,8 @@
       <run>
         local session = loadSession()
         local selection = getSelection(session, lul_device)
-        local functions = { ecobee.sendMessageFunction(lul_settings.MessageText) }
-        return updateThermostats(session, ecobee.thermostatsUpdateOptions(selection, functions))
+        local functions = { sendMessageFunction(lul_settings.MessageText) }
+        return updateThermostats(session, thermostatsUpdateOptions(selection, functions))
       </run>
     </action>
     <action>
