@@ -38,7 +38,7 @@
     local HEAT_OFF = -5002
     local MAX_ID_LIST_LEN = 25
     local MAX_AUTH_TOKEN_FAILURES = 5
-    local version = "2.0"
+    local version = "1"
 
     local veraTemperatureScale = "C"
 
