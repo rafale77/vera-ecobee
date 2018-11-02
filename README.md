@@ -3,6 +3,10 @@
 Plugin will work on UI7 as well though I see no specific reason to not use the Appstore Released version which does not require your own developer's account. 
 Note: As of 10/24/2018 no version prior to V2.1 will connect to the ecobee API. Please upgrade to V2.1 or above.
 
+## Release Note: V2.11 (openLuup/UI7)
+
+ - Improved connectivity resilience.
+
 ## Release Note: V2.1 (openLuup/UI7)
 
  - Implemented TLS v1.2 to support updates to the ecobee API from 10/23/18
