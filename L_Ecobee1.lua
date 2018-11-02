@@ -8,7 +8,7 @@
     local Client_ID
 
     -- constants
-    local PLUGIN_VERSION = "2.1"
+    local PLUGIN_VERSION = "2.11"
     local ECOBEE_SID = "urn:ecobee-com:serviceId:Ecobee1"
     local TEMP_SENSOR_SID = "urn:upnp-org:serviceId:TemperatureSensor1"
     local TEMP_SETPOINT_HEAT_SID = "urn:upnp-org:serviceId:TemperatureSetpoint1_Heat"
@@ -38,7 +38,7 @@
     local HEAT_OFF = -5002
     local MAX_ID_LIST_LEN = 25
     local MAX_AUTH_TOKEN_FAILURES = 5
-    local version = "1"
+    local version = "1.2"
 
     local veraTemperatureScale = "C"
 
