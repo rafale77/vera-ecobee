@@ -999,6 +999,15 @@ local function makeRequest(session, options, dataString)
 
   local one, code, headers, errmsg = https.request(options)
 
+-- first retry	
+  if code ~= 200 then	
+    local one, code, headers, errmsg = https.request(options)
+  end
+-- second retry	
+  if code ~= 200 then
+    local one, code, headers, errmsg = https.request(options)
+  end
+	
   res = table.concat(res)
 
   if session.log then
