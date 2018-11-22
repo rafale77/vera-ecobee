@@ -8,7 +8,7 @@
     local Client_ID
 
     -- constants
-    local PLUGIN_VERSION = "2.11"
+    local PLUGIN_VERSION = "2.1"
     local ECOBEE_SID = "urn:ecobee-com:serviceId:Ecobee1"
     local TEMP_SENSOR_SID = "urn:upnp-org:serviceId:TemperatureSensor1"
     local TEMP_SETPOINT_HEAT_SID = "urn:upnp-org:serviceId:TemperatureSetpoint1_Heat"
@@ -38,7 +38,7 @@
     local HEAT_OFF = -5002
     local MAX_ID_LIST_LEN = 25
     local MAX_AUTH_TOKEN_FAILURES = 5
-    local version = "1.2"
+    local version = "1"
 
     local veraTemperatureScale = "C"
 
@@ -63,7 +63,7 @@
       end
     end
 
-    local function readVariableOrInit(lul_device, serviceId, name, defaultValue) 
+    local function readVariableOrInit(lul_device, serviceId, name, defaultValue)
       local var = luup.variable_get(serviceId, name, lul_device)
       if (var == nil) then
         var = defaultValue
@@ -72,7 +72,7 @@
       return var
     end
 
-    local function writeVariable(lul_device, serviceId, name, value) 
+    local function writeVariable(lul_device, serviceId, name, value)
       luup.variable_set(serviceId, name, value, lul_device)
     end
 
@@ -129,7 +129,7 @@
 
     local function round(value, precision)
       return (value >= 0) and
-        (math.floor(value * precision + 0.5) / precision) or 
+        (math.floor(value * precision + 0.5) / precision) or
         (math.ceil(value * precision - 0.5) / precision)
     end
 
@@ -233,7 +233,7 @@
       [TEMP_SETPOINT_SID] = {
         ["Application"] = function() return "DualHeatingCooling" end,
         ["CurrentSetpoint"] = function(t)
-          local desiredTemp = (t.settings.hvacMode == "heat") and t.runtime.desiredHeat or 
+          local desiredTemp = (t.settings.hvacMode == "heat") and t.runtime.desiredHeat or
                               ((t.settings.hvacMode == "cool") and t.runtime.desiredCool or ((t.runtime.desiredHeat + t.runtime.desiredCool) / 2))
           return tostring(localizeTemp(desiredTemp))
         end
@@ -245,7 +245,7 @@
         ["Mode"] = function(t)
           local fan = (t.events and #t.events > 0) and t.events[1].fan or nil
           -- TODO: add in "and t.events[1].running" above once it can be relied on
-          
+
           -- if there is no current event, inspect the current climate
           if not fan and t.settings and t.program and t.program.climates then
             for i,v in ipairs(t.program.climates) do
@@ -391,7 +391,7 @@
       -- Config variables
       session.poll   = tonumber(readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "poll", tostring(DEFAULT_POLL)))
       session.poll   = session.poll or DEFAULT_POLL
-      session.poll   = (session.poll < MIN_POLL) and MIN_POLL or session.poll 
+      session.poll   = (session.poll < MIN_POLL) and MIN_POLL or session.poll
 
       session.selectionType  = readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "selectionType", "registered")
       session.selectionMatch = readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "selectionMatch", "")
@@ -418,7 +418,7 @@
     local function saveSession(session)
       if session.error then
         log("Error: " .. tostring(session.error) .. ": " .. tostring(session.error_description))
-	task("Error: " .. tostring(session.error) .. ": " .. tostring(session.error_description))
+	      task("Error: " .. tostring(session.error) .. ": " .. tostring(session.error_description))
       end
 
       writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "auth_token",    session.auth_token or "")
@@ -437,7 +437,7 @@
       saveSession(session)
       return pin
     end
-    
+
     local function getTokens(session)
       local access_token, token_type, refresh_token, scope = reqTokens(session, Client_ID)
       saveSession(session)
@@ -475,9 +475,9 @@
         luup.call_timer("getStatus", 1, SOON, "", "")
       end
     end
-    
+
     -- get status from ecobee
-    
+
     function getStatus()
       -- debug("in getStatus()")
 
@@ -556,9 +556,9 @@
                                 ecobeeToUpnpParam(ECOBEE_SID, "thermostatRev", r) ..
                         "\n" .. ecobeeToUpnpParam(ECOBEE_SID, "runtimeRev", r) ..
                         "\n" .. ecobeeToUpnpParam(ECOBEE_SID, "equipmentStatus", r) ..
-                        "\n" .. ecobeeToUpnpParam(ECOBEE_SID, "quickSaveSetBack", t) .. 
-                        "\n" .. ecobeeToUpnpParam(ECOBEE_SID, "quickSaveSetForward", t) .. 
-                        "\n" .. ecobeeToUpnpParam(ECOBEE_SID, "holdType", t) .. 
+                        "\n" .. ecobeeToUpnpParam(ECOBEE_SID, "quickSaveSetBack", t) ..
+                        "\n" .. ecobeeToUpnpParam(ECOBEE_SID, "quickSaveSetForward", t) ..
+                        "\n" .. ecobeeToUpnpParam(ECOBEE_SID, "holdType", t) ..
                         "\n" .. ecobeeToUpnpParam(TEMP_SENSOR_SID, "CurrentTemperature", t) ..
                         "\n" .. ecobeeToUpnpParam(TEMP_SETPOINT_HEAT_SID, "CurrentSetpoint", t) ..
                         "\n" .. ecobeeToUpnpParam(TEMP_SETPOINT_COOL_SID, "CurrentSetpoint", t) ..
@@ -648,7 +648,7 @@
               log("Failed to find device for thermostat " .. id)
             else
               if (revision.thermostatRev ~= luup.variable_get(ECOBEE_SID, "thermostatRev", child)) or
-                 (revision.runtimeRev ~= luup.variable_get(ECOBEE_SID, "runtimeRev", child)) or 
+                 (revision.runtimeRev ~= luup.variable_get(ECOBEE_SID, "runtimeRev", child)) or
                  (revision.equipmentStatus ~= luup.variable_get(ECOBEE_SID, "equipmentStatus", child)) or
                  (revision.connected ~= (luup.variable_get(HA_DEVICE_SID, "CommFailure", child) == "0")) then
                 changed[#changed + 1] = id
@@ -714,7 +714,7 @@
                   writeVariableFromEcobeeIfChanged(child, HA_DEVICE_SID, "LastUpdate", t)
                   writeVariableFromEcobeeIfChanged(child, HA_DEVICE_SID, "CommFailure", r)
                 end
-                  
+
                 altid = HOUSE_ID_PREFIX .. id
                 child = findChild(PARENT_DEVICE, altid)
                 if not child then
@@ -814,7 +814,7 @@
                                                        "NewCurrentSetpoint", { NewCurrentSetpoint = heatSetpoint })
                                                    or HEAT_OFF
         end
-        
+
         if not func.params.coolHoldTemp then
           local coolSetpoint = luup.variable_get(TEMP_SETPOINT_COOL_SID, "CurrentSetpoint", lul_device)
           func.params.coolHoldTemp = coolSetpoint and upnpToEcobee(TEMP_SETPOINT_COOL_SID, "SetCurrentSetpoint",
@@ -829,7 +829,12 @@
       end
 
       local success = updateThermostats(session, thermostatsUpdateOptions(selection, { func }))
-      if success then getStatusSoon() end
+      if not success then
+        luup.sleep(500)
+        local success = updateThermostats(session, thermostatsUpdateOptions(selection, { func }))
+      else
+        getStatusSoon()
+      end
       return success
     end
 
@@ -871,7 +876,12 @@
     -- "away" function for binary switch device against EMS thermostats
     local function setOccupied(session, selection, lul_device, occupied)
       local success = updateThermostats(session, thermostatsUpdateOptions(selection, { setOccupiedFunction(occupied, "indefinite") }))
-      if success then getStatusSoon() end
+      if not success then
+        luup.sleep(500)
+        local success = updateThermostats(session, thermostatsUpdateOptions(selection, { setOccupiedFunction(occupied, "indefinite") }))
+      else
+        getStatusSoon()
+      end
       return success
     end
 
@@ -883,7 +893,12 @@
         functions[#functions + 1] = resumeProgramFunction()
       end
       local success = updateThermostats(session, thermostatsUpdateOptions(selection, functions))
-      if success then getStatusSoon() end
+      if not success then
+        luup.sleep(500)
+        local success = updateThermostats(session, thermostatsUpdateOptions(selection, functions))
+      else
+        getStatusSoon()
+      end
       return success
     end
 
@@ -918,12 +933,14 @@
 
     function poll_ecobee()
       -- debug("in poll_ecobee()")
-     task("Connected!", TASK_SUCCESS)
+
+      task("Connected!", TASK_SUCCESS)
+
       getStatus()
-      
+
       -- set up the next poll
       local poll = tonumber(readVariableOrInit(PARENT_DEVICE, ECOBEE_SID, "poll", tostring(DEFAULT_POLL))) or DEFAULT_POLL
-      if (poll < MIN_POLL) then poll = MIN_POLL end 
+      if (poll < MIN_POLL) then poll = MIN_POLL end
       poll = tostring(poll)
       writeVariableIfChanged(PARENT_DEVICE, ECOBEE_SID, "poll", poll)
       debug("polling device " .. PARENT_DEVICE .. " again in " .. poll .. " seconds")
@@ -999,15 +1016,17 @@ local function makeRequest(session, options, dataString)
 
   local one, code, headers, errmsg = https.request(options)
 
--- first retry	
-  if code ~= 200 then	
+  -- first retry
+  if code ~=200 then
+    luup.sleep(300)
     local one, code, headers, errmsg = https.request(options)
   end
--- second retry	
-  if code ~= 200 then
+  -- second retry
+  if code ~=200 then
+    luup.sleep(600)
     local one, code, headers, errmsg = https.request(options)
   end
-	
+
   res = table.concat(res)
 
   if session.log then
@@ -1057,7 +1076,7 @@ function reqPin(session)
   local options = { url = "/authorize", headers = { Accept = "application/json" } }
   local data = { response_type = "ecobeePin", scope = session.scope, client_id = Client_ID }
   local res = makeRequest(session, options, stringify(data))
-        
+
   if res and res.ecobeePin and res.code then
     session.auth_token = res.code
     session.auth_token_failures = 0
@@ -1085,7 +1104,7 @@ function reqTokens(session)
                     headers = { Accept = "application/json", ["Content-Type"] = "application/x-www-form-urlencoded" } }
   local data = { grant_type = "ecobeePin", code = session.auth_token, client_id = Client_ID }
   local res = makeRequest(session, options, stringify(data))
-  
+
   if res and res.access_token and res.token_type and res.refresh_token and res.scope then
     session.access_token  = res.access_token
     session.token_type    = res.token_type
@@ -1113,7 +1132,7 @@ local function refreshTokens(session)
   local data = { grant_type = "refresh_token", code = session.refresh_token, client_id = Client_ID }
   local res = makeRequest(session, options, stringify(data))
 
-  -- if the API failed with an "invalid_client" or "invalid_grant" error after MAX_AUTH_TOKEN_FAILURES attempts, 
+  -- if the API failed with an "invalid_client" or "invalid_grant" error after MAX_AUTH_TOKEN_FAILURES attempts,
   -- then we have a rubbish auth_token or refresh_token and must discard the auth_token and force the user to get a new PIN
   if session.error == "invalid_client" or session.error == "invalid_grant" then
     session.auth_token_failures = (type(session.auth_token_failures) == "number") and (session.auth_token_failures + 1) or 1
@@ -1290,7 +1309,7 @@ end
 --[[
 Update thermostats based on the thermostatsUpdateOptions object
 Many common update actions have an associated function which are passed in an array
-so that multiple updates can be completed at one time. 
+so that multiple updates can be completed at one time.
 Updates are completed in the order they appear in the functions array.
 
 Expects these values on call:
@@ -1312,7 +1331,7 @@ function requpdateThermostats(session, thermostatsUpdateOptions)
 
   local body = json.encode(thermostatsUpdateOptions)
   local res = makeRequest(session, options, body)
-  
+
   -- try again if the access_token expired
   if session.error == "14" and session.refresh_token and refreshTokens(session) then
     options.url = API_ROOT .. "thermostat?format=json"
@@ -1394,7 +1413,7 @@ function thermostatsOptions(thermostat_ids,
   includeAlerts   = includeAlerts or false
   includeWeather  = includeWeather or false
 
-  return { selection = { 
+  return { selection = {
     selectionType   = "thermostats",
     selectionMatch  = thermostat_ids,
     includeEvents   = includeEvents,
