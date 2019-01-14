@@ -458,6 +458,10 @@
 
     local function updateThermostats(session, thermostatsUpdateOptions)
       local success = requpdateThermostats(session, thermostatsUpdateOptions)
+      function retry()
+        local success = requpdateThermostats(session, thermostatsUpdateOptions)
+      end
+      if not success then luup.call_delay("retry",2) end
       saveSession(session)
       return success
     end
@@ -827,14 +831,8 @@
           func.params.fan = fan and upnpToEcobee(HVAC_FAN_SID, "SetMode", "NewMode", { NewMode=fan }) or "auto"
         end
       end
-
       local success = updateThermostats(session, thermostatsUpdateOptions(selection, { func }))
-      if not success then
-        luup.sleep(500)
-        local success = updateThermostats(session, thermostatsUpdateOptions(selection, { func }))
-      else
-        getStatusSoon()
-      end
+      getStatusSoon()
       return success
     end
 
@@ -876,12 +874,7 @@
     -- "away" function for binary switch device against EMS thermostats
     local function setOccupied(session, selection, lul_device, occupied)
       local success = updateThermostats(session, thermostatsUpdateOptions(selection, { setOccupiedFunction(occupied, "indefinite") }))
-      if not success then
-        luup.sleep(500)
-        local success = updateThermostats(session, thermostatsUpdateOptions(selection, { setOccupiedFunction(occupied, "indefinite") }))
-      else
-        getStatusSoon()
-      end
+      getStatusSoon()
       return success
     end
 
@@ -893,12 +886,7 @@
         functions[#functions + 1] = resumeProgramFunction()
       end
       local success = updateThermostats(session, thermostatsUpdateOptions(selection, functions))
-      if not success then
-        luup.sleep(500)
-        local success = updateThermostats(session, thermostatsUpdateOptions(selection, functions))
-      else
-        getStatusSoon()
-      end
+      getStatusSoon()
       return success
     end
 
@@ -1015,17 +1003,6 @@ local function makeRequest(session, options, dataString)
   end
 
   local one, code, headers, errmsg = https.request(options)
-
-  -- first retry
-  if code ~=200 then
-    luup.sleep(300)
-    local one, code, headers, errmsg = https.request(options)
-  end
-  -- second retry
-  if code ~=200 then
-    luup.sleep(600)
-    local one, code, headers, errmsg = https.request(options)
-  end
 
   res = table.concat(res)
 
