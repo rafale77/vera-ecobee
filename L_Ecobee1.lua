@@ -458,8 +458,11 @@
 
     local function updateThermostats(session, thermostatsUpdateOptions)
       local success = requpdateThermostats(session, thermostatsUpdateOptions)
+      local retryct = 0
       function retry()
         local success = requpdateThermostats(session, thermostatsUpdateOptions)
+	retryct = retryct+1
+	if not success and retryct <= 5 then luup.call_delay("retry",2) end
       end
       if not success then luup.call_delay("retry",2) end
       saveSession(session)
