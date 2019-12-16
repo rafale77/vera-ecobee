@@ -1,11 +1,11 @@
 {
-    "flashicon": "ecobee.png",
-    "default_icon": "ecobee.png",
+    "flashicon": "../../../icons/ecobee.png",
+    "default_icon": "../../../icons/ecobee.png",
     "halloIconsDir": "pics/hallo",
     "state_icons": [
 
  	{
-            "img": "ecobee_0.png",
+            "img": "../../../icons/ecobee_0.png",
             "conditions": [
                 {
                     "service": "urn:ecobee-com:serviceId:Ecobee1",
@@ -16,7 +16,7 @@
             ]
         },
         {
-            "img": "ecobee_100.png",
+            "img": "../../../icons/ecobee_100.png",
             "conditions": [
                 {
                     "service": "urn:ecobee-com:serviceId:Ecobee1",
