@@ -3,6 +3,11 @@
 Plugin will work on UI7 as well though I see no specific reason to not use the Appstore Released version which does not require your own developer's account. 
 Note: As of 10/24/2018 no version prior to V2.1 will connect to the ecobee API. Please upgrade to V2.1 or above.
 
+## Release Note: V2.2 (openLuup/UI7)
+
+ - Added services to control mode in scene editor. Thanks rigpapa
+ - Changed Icon location to be compatible with FW 7.30. Icons must now be located under /www/cmh/skins/default/icons
+
 ## Release Note: V2.11 (openLuup/UI7)
 
  - Improved connectivity resilience.
