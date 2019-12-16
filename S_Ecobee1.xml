@@ -58,5 +58,6 @@
           <relatedStateVariable>A_ARG_TYPE_holdref</relatedStateVariable>
         </argument>
       </argumentList>
-    </action>>
+    </action>
+  </actionList>
 </scpd>
