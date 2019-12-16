@@ -1,6 +1,6 @@
 {
-    "flashicon": "humidity_sensor_default.png",
-    "default_icon": "humidity_sensor_default.png",
+    "flashicon": "../../../icons/humidity_sensor_default.png",
+    "default_icon": "../../../icons/humidity_sensor_default.png",
     "iconText": "1",
     "imgIconBody": "",
     "imgIconDimmable": "",
