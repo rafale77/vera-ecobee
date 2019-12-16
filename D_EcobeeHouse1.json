@@ -1,6 +1,6 @@
 {
-	"flashicon": "house.png",
-	"default_icon": "house.png",
+	"flashicon": "../../../icons/house.png",
+	"default_icon": "../../../icons/house.png",
 	"imgIconBody": "",
 	"imgIconDimmable": "",
 	"imgIconTurnable": "",
@@ -10,7 +10,7 @@
 	"x": "2",
 	"y": "4",
 	"state_icons": [{
-			"img": "house_0.png",
+			"img": "../../../icons/house_0.png",
 			"conditions": [{
 				"service": "urn:upnp-org:serviceId:SwitchPower1",
 				"variable": "Status",
@@ -19,7 +19,7 @@
 			}]
 		},
 		{
-			"img": "house_100.png",
+			"img": "../../../icons/house_100.png",
 			"conditions": [{
 				"service": "urn:upnp-org:serviceId:SwitchPower1",
 				"variable": "Status",
