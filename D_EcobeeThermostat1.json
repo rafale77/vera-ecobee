@@ -1,6 +1,6 @@
 {
-    "flashicon": "thermostat.png",
-    "default_icon": "thermostat.png",
+    "flashicon": "../../../icons/thermostat.png",
+    "default_icon": "../../../icons/thermostat.png",
     "iconText": "1",
     "imgIconBody": "",
     "imgIconDimmable": "",
@@ -12,7 +12,7 @@
     "y": "4",
     "state_icons": [
         {
-            "img": "thermostat.png",
+            "img": "../../../icons/thermostat.png",
             "conditions": [
                 {
                     "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
@@ -24,7 +24,7 @@
             ]
         },
         {
-            "img": "fan.png",
+            "img": "../../../icons/fan.png",
 
             "conditions": [
                 {
@@ -37,7 +37,7 @@
             ]
         },
         {
-            "img": "Cool.png",
+            "img": "../../../icons/Cool.png",
             "conditions": [
                 {
                     "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
@@ -49,7 +49,7 @@
             ]
         },
         {
-            "img": "Heat.png",
+            "img": "../../../icons/Heat.png",
             "conditions": [
                 {
                     "service": "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
