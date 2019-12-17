@@ -43,7 +43,7 @@
     local veraTemperatureScale = "C"
 
     local function getVeraTemperatureScale()
-      veraTemperatureScale = luup.attr_get("TemperatureScale",0) or "C"
+      veraTemperatureScale = luup.attr_get("TemperatureFormat",0) or "C"
     end
 
 
