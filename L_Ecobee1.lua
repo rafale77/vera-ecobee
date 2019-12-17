@@ -43,11 +43,7 @@
     local veraTemperatureScale = "C"
 
     local function getVeraTemperatureScale()
-      local code, data = luup.inet.wget("http://localhost:3480/data_request?id=lu_sdata")
-      if (code == 0) then
-        data = json.decode(data)
-      end
-      veraTemperatureScale = ((code == 0) and (data ~= nil) and (data.temperature ~= nil)) and data.temperature or "C"
+      veraTemperatureScale = luup.attr_get("TemperatureScale",0) or "C"
     end
 
 
