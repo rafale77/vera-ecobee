@@ -38,11 +38,17 @@ Note: As of 10/24/2018 no version prior to V2.1 will connect to the ecobee API. 
 
 - Make sure your Openluup/lua library supports https. For this You can go to the Misc/OsCommand tab under Altui and install LUASEC using this command "luarocks install luasec". This assumes that you also have luarocks installed. Follow the instructions here: https://github.com/luarocks/luarocks/wiki/Download
 
+For openLuup:
 - Copy the content of the icons folder into the /#your Openluup folder#/icons.
-
 - Copy the content of the repo into /#your Openluup folder#
 
+For UI7:
+- Copy the content of the repo except the icon folder into the /etc/cmh-ludl folder
+- Copy the icon folder in the /www/cmh/skins/default/
+
+Then if this is a new installation (not needed for upgrade):
 - Create a new device in ALTUI using the D_Ecobee1.xml and I_Ecobee1.xml as your device files
+
 
 - Now you need to create an ecobee developer account:
   1. Go to https://www.ecobee.com/developers/
