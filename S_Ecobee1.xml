@@ -15,6 +15,20 @@
       <dataType>string</dataType>
       <sendEventsAttribute>yes</sendEventsAttribute>
     </stateVariable>
+    <stateVariable>
+      <name>A_ARG_TYPE_holdref</name>
+      <dataType>string</dataType>
+      <allowedValueList>
+       <allowedValue>home</allowedValue>
+       <allowedValue>away</allowedValue>
+       <allowedValue>sleep</allowedValue>
+       <allowedValue>smart1</allowedValue>
+      </allowedValueList>
+    </stateVariable>
+    <stateVariable>
+      <name>A_ARG_TYPE_string</name>
+      <dataType>string</dataType>
+    </stateVariable>
   </serviceStateTable>
   <actionList>
     <action>
@@ -31,6 +45,7 @@
         <argument>
           <name>MessageText</name>
           <direction>in</direction>
+          <relatedStateVariable>A_ARG_TYPE_string</relatedStateVariable>
         </argument>
       </argumentList>
     </action>
@@ -40,6 +55,7 @@
         <argument>
           <name>HoldClimateRef</name>
           <direction>in</direction>
+          <relatedStateVariable>A_ARG_TYPE_holdref</relatedStateVariable>
         </argument>
       </argumentList>
     </action>
