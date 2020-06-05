@@ -982,6 +982,7 @@ options.method = options.method or "GET"
 options.headers = options.headers or {}
 options.headers["User-Agent"] = "ecobee-lua-api/" .. version
 options.headers["Content-Type"] = options.headers["Content-Type"] or "application/json;charset=UTF-8"
+options.headers["authority"] = options.headers["authority"] or ""
 options.protocol = "tlsv1_2"
 local errmsg
 
